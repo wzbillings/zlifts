@@ -12,6 +12,7 @@
 #' @export
 validate_lifting_data <- function(sets, tolerance = 1e-8) {
   check_required_columns(sets)
+  volume_matches_garmin <- parse_logical_text(sets$volume_matches_garmin)
 
   blank_activity <- is.na(sets$activity_id) | trimws(as.character(sets$activity_id)) == ""
   bad_set_numbers <- is.na(sets$set_number) | sets$set_number <= 0 | sets$set_number != floor(sets$set_number)
@@ -29,7 +30,7 @@ validate_lifting_data <- function(sets, tolerance = 1e-8) {
   garmin_mismatch <- comparable_garmin & abs(sets$garmin_volume_lb - sets$volume_lb) > tolerance
 
   exact_duplicate_records <- duplicated(sets) | duplicated(sets, fromLast = TRUE)
-  false_match_flags <- !is.na(sets$volume_matches_garmin) & !sets$volume_matches_garmin
+  false_match_flags <- !is.na(volume_matches_garmin) & !volume_matches_garmin
 
   results <- dplyr::bind_rows(
     check_row("required_columns", "pass", "All required columns are present.", 0L),

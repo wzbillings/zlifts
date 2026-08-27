@@ -18,4 +18,13 @@ test_that("validation fails clearly when a required column is missing", {
     "Missing required column"
   )
 })
+test_that("validation accepts text volume match flags", {
+  skip_if_no_seed_data()
+  sets <- read_lifting_sets(seed_lifting_sets_path())
+  sets$volume_matches_garmin <- ifelse(sets$volume_matches_garmin, "True", "False")
+
+  result <- validate_lifting_data(sets)
+
+  expect_true(all(result$status == "pass"))
+})
 
