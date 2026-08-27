@@ -98,3 +98,7 @@ summaries + dashboard
 
 When that ingestion layer is added, it should append normalized set-level records and let the existing project-local functions regenerate summaries and dashboard output. Raw Garmin source files should remain local unless a maintainer intentionally creates a reduced, privacy-reviewed test fixture.
 
+## License
+
+This project is licensed under the GNU Affero General Public License v3.0 only (AGPL-3.0-only). See LICENSE for the full terms.
+
