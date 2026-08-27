@@ -1,0 +1,120 @@
+---
+title: "Garmin Lifting Dashboard"
+format: dashboard
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{r}
+#| label: setup
+#| include: false
+repo_root <- normalizePath(file.path(".."), mustWork = TRUE)
+if (file.exists(file.path(repo_root, "DESCRIPTION"))) {
+  devtools::load_all(repo_root, quiet = TRUE)
+} else {
+  library(garminlifting)
+}
+
+sets <- read_lifting_sets(file.path(repo_root, "data", "processed", "lifting_sets.csv"))
+validation <- validate_lifting_data(sets)
+exercise_summary <- summarize_exercises(sets)
+session_summary <- summarize_sessions(sets)
+
+metric_workouts <- nrow(session_summary)
+metric_sets <- sum(session_summary$total_sets, na.rm = TRUE)
+metric_reps <- sum(session_summary$total_reps, na.rm = TRUE)
+metric_volume <- sum(session_summary$total_volume_lb, na.rm = TRUE)
+metric_latest <- max(session_summary$date, na.rm = TRUE)
+
+session_table <- session_summary |>
+  dplyr::transmute(
+    Date = format(.data$date, "%Y-%m-%d"),
+    `Activity ID` = .data$activity_id,
+    Sets = .data$total_sets,
+    Reps = .data$total_reps,
+    `Total volume` = scales::comma(.data$total_volume_lb)
+  )
+
+validation_table <- validation |>
+  dplyr::transmute(
+    Status = tools::toTitleCase(.data$status),
+    Check = gsub("_", " ", .data$check),
+    Message = .data$message,
+    Count = .data$n
+  )
+```
+
+# Overview
+
+## Summary
+
+```{r}
+bslib::layout_column_wrap(
+  width = "180px",
+  bslib::value_box("Workouts", scales::comma(metric_workouts), theme = "primary"),
+  bslib::value_box("Recorded sets", scales::comma(metric_sets), theme = "secondary"),
+  bslib::value_box("Repetitions", scales::comma(metric_reps), theme = "success"),
+  bslib::value_box("Total volume", paste(scales::comma(metric_volume), "lb"), theme = "info"),
+  bslib::value_box("Latest workout", format(metric_latest, "%b %d, %Y"), theme = "warning")
+)
+```
+
+## Total Workout Volume
+
+```{r}
+#| fig-width: 8
+#| fig-height: 5
+plot_session_volume(session_summary)
+```
+
+# Exercise Progress
+
+## Total Volume By Exercise
+
+```{r}
+#| fig-width: 13
+#| fig-height: 12
+plot_exercise_volume(exercise_summary)
+```
+
+## Maximum Weight By Exercise
+
+```{r}
+#| fig-width: 13
+#| fig-height: 12
+plot_exercise_max_weight(exercise_summary)
+```
+
+# Set Performance
+
+## Set-Level Load And Reps
+
+```{r}
+#| fig-width: 13
+#| fig-height: 12
+plot_set_performance(sets)
+```
+
+# Data / QA
+
+## Workout-Level Summaries
+
+```{r}
+knitr::kable(
+  session_table,
+  align = c("l", "l", "r", "r", "r"),
+  caption = "Workout summaries recalculated from the canonical set-level data."
+)
+```
+
+## Validation Checks
+
+```{r}
+knitr::kable(
+  validation_table,
+  align = c("l", "l", "l", "r"),
+  caption = "Lightweight QA checks run against data/processed/lifting_sets.csv."
+)
+```

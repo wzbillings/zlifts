@@ -1,0 +1,13 @@
+project:
+  type: website
+  output-dir: _site
+
+format:
+  dashboard:
+    theme: cosmo
+    orientation: rows
+
+execute:
+  echo: false
+  warning: false
+  message: false
