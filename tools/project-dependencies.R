@@ -2,10 +2,8 @@
 # renv can keep these packages in the project lockfile intentionally.
 if (FALSE) {
   library(bslib)
-  library(devtools)
   library(knitr)
   library(rmarkdown)
-  library(roxygen2)
   library(testthat)
 }
 

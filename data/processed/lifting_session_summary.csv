@@ -1,4 +1,0 @@
-activity_id,day,date,date_source,page_date_label,workout_name,garmin_total_reps,garmin_total_sets,garmin_volume_lb,self_evaluation,perceived_effort_10,avg_hr_bpm,max_hr_bpm,calculated_sets,calculated_reps,calculated_volume_lb,sets_match,reps_match,volume_match,qa_all_match
-24097428247,1,2026-08-22,inferred from saved-page relative weekday (workout3=Today on 2026-08-26),Saturday @ 4:00 PM,Gym w Brian,336,23,18805.0,Strong,5,,,23,336,18805.0,True,True,True,True
-24095842455,2,2026-08-24,inferred from saved-page relative weekday (workout3=Today on 2026-08-26),Monday @ 5:50 AM,Gym,348,26,25665.0,Weak,6,,,26,348,25665.0,True,True,True,True
-24130689701,3,2026-08-26,inferred from saved-page relative weekday (workout3=Today on 2026-08-26),Today @ 7:54 PM,Strength,380,26,33325.0,Strong,5,122.0,147.0,26,380,33325.0,True,True,True,True

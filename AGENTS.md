@@ -64,7 +64,7 @@ Run commands from the repository root unless noted otherwise.
 ## Generated Files
 
 - Do not commit `dashboard/_site/`, `dashboard/.quarto/`, `check/`, `*.tar.gz`, or `*.Rcheck/` unless the publishing strategy changes.
-- Reference plots in `inst/reference-plots/` are archival. Do not update them as dashboard render artifacts.
+- Reference plots in `archive/reference-plots/` are archival. Do not update them as dashboard render artifacts.
 - If Pages publishing moves to a committed `docs/` directory, document that choice and adjust ignores in the same commit.
 
 ## Documentation Style

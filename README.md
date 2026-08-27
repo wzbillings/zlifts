@@ -25,12 +25,12 @@ zlifts/
 ├── tests/
 │   └── testthat/
 ├── tools/
-├── inst/
+├── archive/
 │   └── reference-plots/
 └── renv/
 ```
 
-`data/raw/workouts/` is reserved for normalized per-workout inputs once an ingestion step exists. `data/processed/lifting_sets.csv` is the longitudinal source table used by the dashboard. The original seed analysis script and PNG previews are archived in `inst/reference-plots/`; the dashboard does not read them.
+`data/raw/workouts/` is reserved for normalized per-workout inputs once an ingestion step exists. `data/processed/lifting_sets.csv` is the longitudinal source table used by the dashboard. The original seed analysis script and PNG previews are archived in `archive/reference-plots/`; the dashboard does not read them.
 
 ## Restore dependencies
 
