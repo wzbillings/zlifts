@@ -68,6 +68,11 @@ Open the rendered dashboard at `dashboard/_site/index.html`.
 
 The dashboard has four sections: Overview, Exercise Progress, Set Performance, and Data / QA. It loads `data/processed/lifting_sets.csv`, runs project-local R functions, and renders ggplot2 figures directly from the data.
 
+
+## Publish to GitHub Pages
+
+The `.github/workflows/publish-dashboard.yml` workflow restores R packages from `renv.lock`, runs tests, renders `dashboard/_site`, uploads that directory as a GitHub Pages artifact, and deploys it. In the GitHub repository settings, configure Pages to use "GitHub Actions" as the source.
+
 ## Future workout flow
 
 Future ingestion is intentionally not implemented yet. Conceptually, new workouts should enter like this:
