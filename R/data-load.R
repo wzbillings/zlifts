@@ -12,7 +12,7 @@ read_lifting_sets <- function(path = file.path("data", "processed", "lifting_set
   if (!file.exists(path)) {
     rlang::abort(
       c("Cannot find lifting set data.", x = paste("Path does not exist:", path)),
-      class = "garminlifting_missing_file"
+      class = "zlifts_missing_file"
     )
   }
 

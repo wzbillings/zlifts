@@ -15,7 +15,7 @@ check_required_columns <- function(data, columns = required_lifting_columns()) {
         "Missing required column(s) in lifting data.",
         x = paste("Missing required column(s):", paste(missing, collapse = ", "))
       ),
-      class = "garminlifting_missing_columns"
+      class = "zlifts_missing_columns"
     )
   }
   invisible(data)

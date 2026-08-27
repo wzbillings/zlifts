@@ -8,7 +8,7 @@
 #' @param tolerance Numeric tolerance used when comparing calculated volumes.
 #'
 #' @return A tibble with columns `check`, `status`, `message`, and `n`, with
-#'   class `garminlifting_validation`.
+#'   class `zlifts_validation`.
 #' @export
 validate_lifting_data <- function(sets, tolerance = 1e-8) {
   check_required_columns(sets)
@@ -84,12 +84,12 @@ validate_lifting_data <- function(sets, tolerance = 1e-8) {
     )
   )
 
-  class(results) <- c("garminlifting_validation", class(results))
+  class(results) <- c("zlifts_validation", class(results))
   results
 }
 
 #' @export
-print.garminlifting_validation <- function(x, ...) {
+print.zlifts_validation <- function(x, ...) {
   failed <- sum(x$status == "fail", na.rm = TRUE)
   warned <- sum(x$status == "warn", na.rm = TRUE)
   passed <- sum(x$status == "pass", na.rm = TRUE)

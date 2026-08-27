@@ -1,5 +1,5 @@
 ---
-title: "Garmin Lifting Dashboard"
+title: "ZLifts Dashboard"
 format: dashboard
 execute:
   echo: false
@@ -14,7 +14,7 @@ repo_root <- normalizePath(file.path(".."), mustWork = TRUE)
 if (file.exists(file.path(repo_root, "DESCRIPTION"))) {
   devtools::load_all(repo_root, quiet = TRUE)
 } else {
-  library(garminlifting)
+  library(zlifts)
 }
 
 sets <- read_lifting_sets(file.path(repo_root, "data", "processed", "lifting_sets.csv"))

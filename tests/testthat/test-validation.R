@@ -3,7 +3,7 @@ test_that("validation reports pass/fail checks", {
   result <- read_lifting_sets(seed_lifting_sets_path()) |>
     validate_lifting_data()
 
-  expect_s3_class(result, "garminlifting_validation")
+  expect_s3_class(result, "zlifts_validation")
   expect_true(all(c("check", "status", "message", "n") %in% names(result)))
   expect_true(all(result$status == "pass"))
 })

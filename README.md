@@ -1,6 +1,6 @@
-# Garmin lifting analysis
+# zlifts
 
-`garminlifting` is a personal R package and Quarto dashboard for longitudinal analysis of normalized Garmin strength-training data. The set-level file is the source of truth; summaries, plots, tests, and the dashboard are all calculated from that table.
+`zlifts` is a personal Quarto dashboard project for longitudinal analysis of normalized Garmin strength-training data. The set-level file is the source of truth; summaries, plots, tests, and the dashboard are all calculated from that table.
 
 ## Data model
 
@@ -11,12 +11,12 @@ Volume is calculated as `reps * weight_lb`. Missing fields are preserved rather 
 ## Directory structure
 
 ```text
-garminlifting/
+zlifts/
 ├── DESCRIPTION
 ├── NAMESPACE
 ├── LICENSE
 ├── README.md
-├── garminlifting.Rproj
+├── zlifts.Rproj
 ├── R/
 ├── data/
 │   ├── raw/
@@ -31,7 +31,7 @@ garminlifting/
 └── renv/
 ```
 
-`data/raw/workouts/` is reserved for normalized per-workout inputs once an ingestion step exists. `data/processed/lifting_sets.csv` is the longitudinal source table used by the package. The original seed analysis script and PNG previews are archived in `inst/reference-plots/`; the dashboard does not read them.
+`data/raw/workouts/` is reserved for normalized per-workout inputs once an ingestion step exists. `data/processed/lifting_sets.csv` is the longitudinal source table used by the dashboard. The original seed analysis script and PNG previews are archived in `inst/reference-plots/`; the dashboard does not read them.
 
 ## Restore dependencies
 
@@ -41,7 +41,7 @@ From a fresh clone, install R and the Quarto CLI, then run:
 renv::restore()
 ```
 
-The package DESCRIPTION stays limited to package runtime and test dependencies. The renv lockfile also records development and dashboard tooling detected from the repository files. Quarto itself is an external CLI and is not listed as an R package dependency.
+The DESCRIPTION file stays limited to R runtime and test dependencies while the package-era structure remains. The renv lockfile also records development and dashboard tooling detected from the repository files. Quarto itself is an external CLI and is not listed as an R package dependency.
 
 ## Develop and test
 
@@ -70,7 +70,7 @@ quarto render dashboard
 
 Open the rendered dashboard at `dashboard/_site/index.html`.
 
-The dashboard has four sections: Overview, Exercise Progress, Set Performance, and Data / QA. It loads `data/processed/lifting_sets.csv`, runs package functions, and renders ggplot2 figures directly from the data.
+The dashboard has four sections: Overview, Exercise Progress, Set Performance, and Data / QA. It loads `data/processed/lifting_sets.csv`, runs project-local R functions, and renders ggplot2 figures directly from the data.
 
 ## Future workout flow
 
@@ -88,6 +88,6 @@ lifting_sets.csv
 summaries + dashboard
 ```
 
-When that ingestion layer is added, it should append normalized set-level records and let the existing package functions regenerate summaries and dashboard output.
+When that ingestion layer is added, it should append normalized set-level records and let the existing project-local functions regenerate summaries and dashboard output.
 
 

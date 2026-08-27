@@ -13,7 +13,7 @@ validate_lifting_data(sets, tolerance = 1e-08)
 }
 \value{
 A tibble with columns \code{check}, \code{status}, \code{message}, and \code{n}, with
-class \code{garminlifting_validation}.
+class \code{zlifts_validation}.
 }
 \description{
 Performs lightweight checks on the canonical set-level table. Missing

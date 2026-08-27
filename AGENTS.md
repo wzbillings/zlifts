@@ -2,7 +2,7 @@
 
 ## Summary
 
-Treat this repository as a Quarto dashboard project for Garmin lifting analysis. The main output is a GitHub Pages site rendered from committed workout data. R code in this repo is project-local analysis code for loading, validating, summarizing, and plotting that data.
+Treat `zlifts` as a Quarto dashboard project for Garmin lifting analysis. The main output is a GitHub Pages site rendered from committed workout data. R code in this repo is project-local analysis code for loading, validating, summarizing, and plotting that data.
 
 Prefer changes that make this workflow clearer:
 

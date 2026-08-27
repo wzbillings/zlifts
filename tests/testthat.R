@@ -1,4 +1,4 @@
 library(testthat)
-library(garminlifting)
+library(zlifts)
 
-test_check("garminlifting")
+test_check("zlifts")
