@@ -1,6 +1,8 @@
 # zlifts
 
-`zlifts` is a personal Quarto dashboard project for longitudinal analysis of normalized Garmin strength-training data. The set-level file is the source of truth; summaries, plots, tests, and the dashboard are all calculated from that table.
+`zlifts` is a personal Quarto dashboard project for longitudinal analysis of normalized Garmin strength-training data. The set-level file is the source of truth; summaries, plots, tests, and the dashboard are all calculated from that table through project-local R modules.
+
+Live dashboard: <https://wzbillings.github.io/zlifts/>
 
 ## Data model
 
@@ -14,31 +16,31 @@ This public repository commits only normalized analysis-ready lifting data at `d
 
 Raw Garmin Connect HTML or HTM pages, FIT files, ZIP exports, and similar source artifacts are local-only by default. They can contain location, device, profile, or physiology metadata that the public dashboard does not need, so `.gitignore` blocks files under `data/raw/workouts/` except for that directory's README.
 
-The dashboard and GitHub Pages workflow should read committed processed data only. Raw Garmin exports are not dashboard inputs and should not be copied into rendered output.
+The dashboard and GitHub Pages workflow must read committed processed data only. Raw Garmin exports are not dashboard inputs and must not be copied into rendered output.
 
 ## Directory structure
 
 ```text
 zlifts/
-├── LICENSE
-├── README.md
-├── zlifts.Rproj
-├── R/
-├── scripts/
-├── data/
-│   ├── raw/
-│   │   └── workouts/
-│   └── processed/
-├── dashboard/
-├── tests/
-│   └── testthat/
-├── tools/
-├── archive/
-│   └── reference-plots/
-└── renv/
+|-- LICENSE
+|-- README.md
+|-- zlifts.Rproj
+|-- R/
+|-- scripts/
+|-- data/
+|   |-- raw/
+|   |   `-- workouts/
+|   `-- processed/
+|-- dashboard/
+|-- tests/
+|   `-- testthat/
+|-- tools/
+|-- archive/
+|   `-- reference-plots/
+`-- renv/
 ```
 
-`data/raw/workouts/` is reserved for local-only per-workout source files once an ingestion step exists. `data/processed/lifting_sets.csv` is the longitudinal source table used by the dashboard. The original seed analysis script and PNG previews are archived in `archive/reference-plots/`; the dashboard does not read them.
+`data/raw/workouts/` is reserved for local-only Garmin source exports once an ingestion step exists. `data/processed/lifting_sets.csv` is the longitudinal source table used by the dashboard. R modules in `R/` are loaded with `scripts/source-analysis.R`; they are project code, not a package API. The original seed analysis script and PNG previews are archived in `archive/reference-plots/`; the dashboard does not read them.
 
 ## Restore dependencies
 
@@ -72,13 +74,13 @@ From the repository root:
 quarto render dashboard
 ```
 
-Open the rendered dashboard at `dashboard/_site/index.html`.
+Open the rendered dashboard at `dashboard/_site/index.html`, or use the published GitHub Pages site after the workflow runs.
 
 The dashboard has five sections: Overview, Progress Highlights, Exercise Progress, Set Performance, and Data / QA. It loads `data/processed/lifting_sets.csv`, runs project-local R functions, and renders interactive figures directly from the data.
 
 ## Publish to GitHub Pages
 
-The `.github/workflows/publish-dashboard.yml` workflow restores R packages from `renv.lock`, runs tests, renders `dashboard/_site`, uploads that directory as a GitHub Pages artifact, and deploys it. In the GitHub repository settings, configure Pages to use "GitHub Actions" as the source.
+The `.github/workflows/publish-dashboard.yml` workflow restores R packages from `renv.lock`, runs tests, renders `dashboard/_site`, uploads that directory as a GitHub Pages artifact, and deploys it. GitHub Pages is configured to use "GitHub Actions" as the source.
 
 ## Future workout flow
 
@@ -100,5 +102,4 @@ When that ingestion layer is added, it should append normalized set-level record
 
 ## License
 
-This project is licensed under the GNU Affero General Public License v3.0 only (AGPL-3.0-only). See LICENSE for the full terms.
-
+This project is licensed under the GNU Affero General Public License v3.0 only (`AGPL-3.0-only`). See `LICENSE` for the full terms.

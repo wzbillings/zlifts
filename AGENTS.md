@@ -14,7 +14,7 @@ committed workout data -> validation -> summaries and plots -> Quarto dashboard 
 
 - `dashboard/`: Quarto website and dashboard source. `dashboard/index.qmd` is the main published page until the dashboard is intentionally split.
 - `data/processed/lifting_sets.csv`: canonical set-level dataset. Summary CSVs are derived snapshots unless a documented workflow says otherwise.
-- `data/raw/workouts/`: normalized per-workout source files for future ingestion.
+- `data/raw/workouts/`: local-only raw Garmin source exports for future ingestion work. The README is committed; raw files under this path are ignored by policy.
 - `R/`: project-local R modules for loading, validation, summaries, and plots. Keep these functions useful and testable, but do not optimize them as a public package interface.
 - `tests/testthat/`: regression tests for data rules, summary behavior, and plot objects.
 - `renv.lock`: dependency lockfile for local and CI reproducibility.
@@ -24,7 +24,7 @@ committed workout data -> validation -> summaries and plots -> Quarto dashboard 
 
 - Aim the repo at a static Quarto dashboard on GitHub Pages, not a reusable R package.
 - Keep R functions as small-interface modules that hide data parsing, validation, summary, or plotting details from the dashboard.
-- Keep source data, derived data, dashboard source, and generated site output separate.
+- Keep raw source exports, processed data, dashboard source, and generated site output separate.
 - Make CI/CD render from committed source data when possible. Avoid checking in rendered site output unless the selected Pages strategy requires a committed output directory such as `docs/`.
 - Keep R module loading explicit through `scripts/source-analysis.R` rather than package install/load tooling.
 
@@ -34,6 +34,7 @@ committed workout data -> validation -> summaries and plots -> Quarto dashboard 
 - Compute volume as `reps * weight_lb`.
 - Do not infer missing warm-up sets, hidden values, or missing Garmin fields.
 - New daily data should append normalized set-level records, then let summaries and dashboard output regenerate.
+- Keep raw Garmin exports local unless a maintainer intentionally creates a reduced, privacy-reviewed fixture.
 - Validate before rendering when touching ingestion, processed data, summaries, or plot logic.
 
 ## Dependencies
@@ -55,7 +56,7 @@ Run commands from the repository root unless noted otherwise.
 
 ## Commit Discipline
 
-- Keep commits logical and small. Separate docs, data, analysis logic, dashboard rendering, CI wiring, and package-to-dashboard migration when they can be reviewed separately.
+- Keep commits logical and small. Separate docs, data, analysis logic, dashboard rendering, CI wiring, dependency changes, and repository cleanup when they can be reviewed separately.
 - Use Conventional Commits 1.0.0 format: `<type>[optional scope]: <description>`.
 - Common types for this repo: `feat`, `fix`, `docs`, `test`, `refactor`, `ci`, and `chore`.
 - Use `!` and a `BREAKING CHANGE:` footer for incompatible behavior or data contract changes.

@@ -1,3 +1,4 @@
+# Locate the project root from a starting path by checking stable repository markers.
 find_project_root <- function(start = getwd()) {
   path <- normalizePath(start, mustWork = TRUE)
   if (!dir.exists(path)) {
@@ -23,6 +24,7 @@ find_project_root <- function(start = getwd()) {
   }
 }
 
+# Source project-local analysis modules in dependency order.
 source_zlifts <- function(repo_root = find_project_root(), envir = parent.frame()) {
   repo_root <- normalizePath(repo_root, mustWork = TRUE)
   analysis_files <- file.path(repo_root, c(

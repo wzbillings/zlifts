@@ -1,3 +1,4 @@
+# Shared ggplot theme for static plots before Quarto converts them to widgets.
 lifting_plot_theme <- function(base_size = 11) {
   ggplot2::theme_minimal(base_size = base_size) +
     ggplot2::theme(
@@ -9,6 +10,7 @@ lifting_plot_theme <- function(base_size = 11) {
     )
 }
 
+# Convert a ggplot to a self-contained Plotly widget for the static dashboard.
 interactive_lifting_plot <- function(plot, tooltip = "text") {
   if (!requireNamespace("plotly", quietly = TRUE)) {
     rlang::abort(

@@ -88,6 +88,14 @@ summarize_movement_groups <- function(sets) {
     dplyr::arrange(.data$date, .data$activity_id, .data$movement_group)
 }
 
+#' Summarize whole-dashboard progress metrics
+#'
+#' This is a small one-row summary for dashboard value boxes. It reports
+#' observed totals only; it does not infer missing sessions or hidden sets.
+#'
+#' @param sets A set-level tibble, usually from read_lifting_sets().
+#'
+#' @return A one-row tibble with workout counts, totals, and latest session fields.
 summarize_session_progress <- function(sets) {
   check_required_columns(sets)
   session_summary <- summarize_sessions(sets)
@@ -119,6 +127,16 @@ summarize_session_progress <- function(sets) {
   )
 }
 
+#' Summarize recorded exercise progress
+#'
+#' Progress is calculated within exact Garmin exercise names. The summary compares
+#' the latest recorded max with the first recorded max only when an exercise has
+#' enough observed workouts.
+#'
+#' @param sets A set-level tibble, usually from read_lifting_sets().
+#' @param min_observations Minimum workout count before reporting max-weight change.
+#'
+#' @return A tibble with one row per exact exercise name.
 summarize_exercise_progress <- function(sets, min_observations = 2L) {
   check_required_columns(sets)
 
@@ -195,6 +213,7 @@ summarize_exercise_progress <- function(sets, min_observations = 2L) {
     )
 }
 
+# Empty progress result used when there are no set rows to summarize.
 empty_exercise_progress <- function() {
   tibble::tibble(
     exercise = character(),
@@ -211,6 +230,7 @@ empty_exercise_progress <- function() {
   )
 }
 
+# Build the plain-language dashboard note for an exercise progress row.
 progress_note <- function(has_repeated_observations, change_lb) {
   dplyr::case_when(
     !has_repeated_observations ~ "Only one workout recorded",
@@ -220,4 +240,3 @@ progress_note <- function(has_repeated_observations, change_lb) {
     TRUE ~ "Recorded max unchanged from first logged workout"
   )
 }
-
