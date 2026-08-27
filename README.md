@@ -8,6 +8,14 @@ The canonical analytical dataset is `data/processed/lifting_sets.csv`. It has on
 
 Volume is calculated as `reps * weight_lb`. Missing fields are preserved rather than inferred. In particular, warm-up sets are not inferred when `set_type` is missing.
 
+## Public data policy
+
+This public repository commits only normalized analysis-ready lifting data at `data/processed/lifting_sets.csv`. Derived summaries are regenerated from that file by project-local R functions and are not committed as canonical data.
+
+Raw Garmin Connect HTML or HTM pages, FIT files, ZIP exports, and similar source artifacts are local-only by default. They can contain location, device, profile, or physiology metadata that the public dashboard does not need, so `.gitignore` blocks files under `data/raw/workouts/` except for that directory's README.
+
+The dashboard and GitHub Pages workflow should read committed processed data only. Raw Garmin exports are not dashboard inputs and should not be copied into rendered output.
+
 ## Directory structure
 
 ```text
@@ -30,7 +38,7 @@ zlifts/
 └── renv/
 ```
 
-`data/raw/workouts/` is reserved for normalized per-workout inputs once an ingestion step exists. `data/processed/lifting_sets.csv` is the longitudinal source table used by the dashboard. The original seed analysis script and PNG previews are archived in `archive/reference-plots/`; the dashboard does not read them.
+`data/raw/workouts/` is reserved for local-only per-workout source files once an ingestion step exists. `data/processed/lifting_sets.csv` is the longitudinal source table used by the dashboard. The original seed analysis script and PNG previews are archived in `archive/reference-plots/`; the dashboard does not read them.
 
 ## Restore dependencies
 
@@ -66,8 +74,7 @@ quarto render dashboard
 
 Open the rendered dashboard at `dashboard/_site/index.html`.
 
-The dashboard has four sections: Overview, Exercise Progress, Set Performance, and Data / QA. It loads `data/processed/lifting_sets.csv`, runs project-local R functions, and renders ggplot2 figures directly from the data.
-
+The dashboard has four sections: Overview, Exercise Progress, Set Performance, and Data / QA. It loads `data/processed/lifting_sets.csv`, runs project-local R functions, and renders figures directly from the data.
 
 ## Publish to GitHub Pages
 
@@ -75,10 +82,10 @@ The `.github/workflows/publish-dashboard.yml` workflow restores R packages from 
 
 ## Future workout flow
 
-Future ingestion is intentionally not implemented yet. Conceptually, new workouts should enter like this:
+Future ingestion is intentionally not implemented yet. Daily updates currently happen by committing normalized rows to `data/processed/lifting_sets.csv`. Conceptually, new workouts should enter like this:
 
 ```text
-Garmin export/HTML
+local-only Garmin HTML/FIT export
         ->
 future ingestion pipeline
         ->
@@ -89,6 +96,4 @@ lifting_sets.csv
 summaries + dashboard
 ```
 
-When that ingestion layer is added, it should append normalized set-level records and let the existing project-local functions regenerate summaries and dashboard output.
-
-
+When that ingestion layer is added, it should append normalized set-level records and let the existing project-local functions regenerate summaries and dashboard output. Raw Garmin source files should remain local unless a maintainer intentionally creates a reduced, privacy-reviewed test fixture.

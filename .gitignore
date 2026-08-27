@@ -4,6 +4,8 @@
 .Ruserdata
 .quarto/
 dashboard/_site/
+dashboard/site_libs/
+dashboard/.quarto
 dashboard/.gitignore
 *_cache/
 *_files/
@@ -17,3 +19,6 @@ check/
 *.tar.gz
 *.Rcheck/
 
+# Local Garmin source exports can include private metadata.
+data/raw/workouts/*
+!data/raw/workouts/README.md
