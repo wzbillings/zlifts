@@ -5,7 +5,6 @@
 #'   sessions; beyond that, use a date axis for readability.
 #'
 #' @return A ggplot object.
-#' @export
 plot_session_volume <- function(session_summary, discrete_threshold = 12) {
   check_required_columns(
     session_summary,

@@ -4,7 +4,6 @@
 #' @param ncol Number of facet columns.
 #'
 #' @return A ggplot object.
-#' @export
 plot_set_performance <- function(sets, ncol = 3) {
   check_required_columns(
     sets,

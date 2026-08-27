@@ -18,7 +18,7 @@ committed workout data -> validation -> summaries and plots -> Quarto dashboard 
 - `R/`: project-local R modules for loading, validation, summaries, and plots. Keep these functions useful and testable, but do not optimize them as a public package interface.
 - `tests/testthat/`: regression tests for data rules, summary behavior, and plot objects.
 - `renv.lock`: dependency lockfile for local and CI reproducibility.
-- `DESCRIPTION`, `NAMESPACE`, `man/`, and other package-era files may remain during the transition. Do not add new package-only workflows unless the user asks for them.
+- `scripts/source-analysis.R`: source loader for project-local R modules used by tests, dashboard renders, and future automation.
 
 ## Design Direction
 
@@ -26,7 +26,7 @@ committed workout data -> validation -> summaries and plots -> Quarto dashboard 
 - Keep R functions as small-interface modules that hide data parsing, validation, summary, or plotting details from the dashboard.
 - Keep source data, derived data, dashboard source, and generated site output separate.
 - Make CI/CD render from committed source data when possible. Avoid checking in rendered site output unless the selected Pages strategy requires a committed output directory such as `docs/`.
-- When removing R package tooling, remove the replaced package artifact and update the affected commands or docs in the same commit.
+- Keep R module loading explicit through `scripts/source-analysis.R` rather than package install/load tooling.
 
 ## Data Rules
 
@@ -49,9 +49,9 @@ committed workout data -> validation -> summaries and plots -> Quarto dashboard 
 Run commands from the repository root unless noted otherwise.
 
 - Restore dependencies: `Rscript -e "renv::restore()"`
-- Run tests while the package-era structure remains: `Rscript -e "devtools::test()"`
+- Run tests: `Rscript tests/testthat.R`
 - Render the dashboard: `quarto render dashboard`
-- Avoid relying on `devtools::document()` or `R CMD check` for routine dashboard work unless package artifacts are intentionally changed.
+- Do not use `devtools::document()` or `R CMD check` for routine dashboard work.
 
 ## Commit Discipline
 

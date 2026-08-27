@@ -11,11 +11,8 @@ execute:
 #| label: setup
 #| include: false
 repo_root <- normalizePath(file.path(".."), mustWork = TRUE)
-if (file.exists(file.path(repo_root, "DESCRIPTION"))) {
-  devtools::load_all(repo_root, quiet = TRUE)
-} else {
-  library(zlifts)
-}
+source(file.path(repo_root, "scripts", "source-analysis.R"))
+source_zlifts(repo_root)
 
 sets <- read_lifting_sets(file.path(repo_root, "data", "processed", "lifting_sets.csv"))
 validation <- validate_lifting_data(sets)

@@ -7,7 +7,6 @@
 #' @param path Path to the canonical `lifting_sets.csv` file.
 #'
 #' @return A tibble with one row per recorded lifting set.
-#' @export
 read_lifting_sets <- function(path = file.path("data", "processed", "lifting_sets.csv")) {
   if (!file.exists(path)) {
     rlang::abort(

@@ -1,4 +1,6 @@
 library(testthat)
-library(zlifts)
 
-test_check("zlifts")
+source(file.path("scripts", "source-analysis.R"))
+source_zlifts()
+
+test_dir(file.path("tests", "testthat"), reporter = "summary")

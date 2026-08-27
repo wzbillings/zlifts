@@ -12,12 +12,11 @@ Volume is calculated as `reps * weight_lb`. Missing fields are preserved rather 
 
 ```text
 zlifts/
-├── DESCRIPTION
-├── NAMESPACE
 ├── LICENSE
 ├── README.md
 ├── zlifts.Rproj
 ├── R/
+├── scripts/
 ├── data/
 │   ├── raw/
 │   │   └── workouts/
@@ -25,7 +24,7 @@ zlifts/
 ├── dashboard/
 ├── tests/
 │   └── testthat/
-├── man/
+├── tools/
 ├── inst/
 │   └── reference-plots/
 └── renv/
@@ -41,15 +40,12 @@ From a fresh clone, install R and the Quarto CLI, then run:
 renv::restore()
 ```
 
-The DESCRIPTION file stays limited to R runtime and test dependencies while the package-era structure remains. The renv lockfile also records development and dashboard tooling detected from the repository files. Quarto itself is an external CLI and is not listed as an R package dependency.
+The renv lockfile records R packages used by the analysis code, tests, and dashboard. Quarto itself is an external CLI and is not listed as an R package dependency.
 
 ## Develop and test
 
-```r
-devtools::load_all()
-devtools::test()
-devtools::document()
-devtools::check()
+```bash
+Rscript tests/testthat.R
 ```
 
 The regression tests assert that the seed dataset has 75 set records, three activities, and the validated chronological session totals:

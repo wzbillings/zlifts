@@ -5,7 +5,6 @@
 #' @param ncol Number of facet columns.
 #'
 #' @return A ggplot object.
-#' @export
 plot_exercise_max_weight <- function(exercise_summary, ncol = 3) {
   check_required_columns(
     exercise_summary,

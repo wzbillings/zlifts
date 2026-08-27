@@ -9,7 +9,6 @@
 #'
 #' @return A tibble with columns `check`, `status`, `message`, and `n`, with
 #'   class `zlifts_validation`.
-#' @export
 validate_lifting_data <- function(sets, tolerance = 1e-8) {
   check_required_columns(sets)
   volume_matches_garmin <- parse_logical_text(sets$volume_matches_garmin)
@@ -88,7 +87,6 @@ validate_lifting_data <- function(sets, tolerance = 1e-8) {
   results
 }
 
-#' @export
 print.zlifts_validation <- function(x, ...) {
   failed <- sum(x$status == "fail", na.rm = TRUE)
   warned <- sum(x$status == "warn", na.rm = TRUE)

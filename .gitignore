@@ -4,6 +4,7 @@
 .Ruserdata
 .quarto/
 dashboard/_site/
+dashboard/.gitignore
 *_cache/
 *_files/
 .DS_Store

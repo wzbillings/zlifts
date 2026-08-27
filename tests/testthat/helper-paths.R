@@ -14,7 +14,7 @@ local_seed_lifting_sets_path <- function() {
 skip_if_no_seed_data <- function() {
   testthat::skip_if(
     is.na(local_seed_lifting_sets_path()),
-    "Seed data are stored in the repository data/ directory and excluded from the package tarball."
+    "Seed data are stored in the repository data/ directory."
   )
 }
 

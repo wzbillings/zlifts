@@ -6,7 +6,6 @@
 #' @param sets A set-level tibble, usually from read_lifting_sets().
 #'
 #' @return A tibble with one row per `activity_id` x `date` x `exercise`.
-#' @export
 summarize_exercises <- function(sets) {
   check_required_columns(sets)
 
@@ -37,7 +36,6 @@ summarize_exercises <- function(sets) {
 #' @param sets A set-level tibble, usually from read_lifting_sets().
 #'
 #' @return A tibble with one row per workout activity.
-#' @export
 summarize_sessions <- function(sets) {
   check_required_columns(sets)
 
@@ -67,7 +65,6 @@ summarize_sessions <- function(sets) {
 #' @param sets A set-level tibble, usually from read_lifting_sets().
 #'
 #' @return A tibble with one row per `activity_id` x `date` x `movement_group`.
-#' @export
 summarize_movement_groups <- function(sets) {
   check_required_columns(sets)
 
