@@ -74,7 +74,7 @@ quarto render dashboard
 
 Open the rendered dashboard at `dashboard/_site/index.html`.
 
-The dashboard has four sections: Overview, Exercise Progress, Set Performance, and Data / QA. It loads `data/processed/lifting_sets.csv`, runs project-local R functions, and renders figures directly from the data.
+The dashboard has five sections: Overview, Progress Highlights, Exercise Progress, Set Performance, and Data / QA. It loads `data/processed/lifting_sets.csv`, runs project-local R functions, and renders interactive figures directly from the data.
 
 ## Publish to GitHub Pages
 
@@ -97,3 +97,4 @@ summaries + dashboard
 ```
 
 When that ingestion layer is added, it should append normalized set-level records and let the existing project-local functions regenerate summaries and dashboard output. Raw Garmin source files should remain local unless a maintainer intentionally creates a reduced, privacy-reviewed test fixture.
+
