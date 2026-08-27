@@ -8,12 +8,28 @@
 plot_exercise_max_weight <- function(exercise_summary, ncol = 3) {
   check_required_columns(
     exercise_summary,
-    c("date", "exercise", "max_weight_lb")
+    c("date", "exercise", "sets", "total_volume_lb", "max_weight_lb")
+  )
+
+  exercise_summary <- dplyr::mutate(
+    exercise_summary,
+    hover_text = paste0(
+      "Date: ", format_hover_date(.data$date),
+      "<br>Exercise: ", .data$exercise,
+      "<br>Sets: ", format_hover_count(.data$sets),
+      "<br>Max recorded weight: ", format_hover_lb(.data$max_weight_lb),
+      "<br>Total volume: ", format_hover_lb(.data$total_volume_lb)
+    )
   )
 
   ggplot2::ggplot(
     exercise_summary,
-    ggplot2::aes(x = .data$date, y = .data$max_weight_lb, group = .data$exercise)
+    ggplot2::aes(
+      x = .data$date,
+      y = .data$max_weight_lb,
+      group = .data$exercise,
+      text = .data$hover_text
+    )
   ) +
     ggplot2::geom_line(linewidth = 0.7, colour = "#5b7f3a", na.rm = TRUE) +
     ggplot2::geom_point(size = 2.4, colour = "#34551f", na.rm = TRUE) +
@@ -35,4 +51,3 @@ plot_exercise_max_weight <- function(exercise_summary, ncol = 3) {
     ) +
     lifting_plot_theme()
 }
-

@@ -18,12 +18,44 @@ sets <- read_lifting_sets(file.path(repo_root, "data", "processed", "lifting_set
 validation <- validate_lifting_data(sets)
 exercise_summary <- summarize_exercises(sets)
 session_summary <- summarize_sessions(sets)
+session_progress <- summarize_session_progress(sets)
+exercise_progress <- summarize_exercise_progress(sets)
 
-metric_workouts <- nrow(session_summary)
-metric_sets <- sum(session_summary$total_sets, na.rm = TRUE)
-metric_reps <- sum(session_summary$total_reps, na.rm = TRUE)
-metric_volume <- sum(session_summary$total_volume_lb, na.rm = TRUE)
-metric_latest <- max(session_summary$date, na.rm = TRUE)
+metric_workouts <- session_progress$total_workouts[[1]]
+metric_sets <- session_progress$total_sets[[1]]
+metric_reps <- session_progress$total_reps[[1]]
+metric_volume <- session_progress$cumulative_volume_lb[[1]]
+metric_latest <- session_progress$latest_workout_date[[1]]
+metric_latest_volume <- session_progress$latest_workout_total_volume_lb[[1]]
+
+format_lb <- function(x) {
+  dplyr::if_else(
+    is.na(x),
+    "Missing",
+    paste(scales::comma(x), "lb")
+  )
+}
+
+format_change_lb <- function(x) {
+  dplyr::case_when(
+    is.na(x) ~ "Needs repeat",
+    x > 0 ~ paste0("+", scales::comma(x), " lb"),
+    x < 0 ~ paste0(scales::comma(x), " lb"),
+    TRUE ~ "0 lb"
+  )
+}
+
+exercise_progress_table <- exercise_progress |>
+  dplyr::transmute(
+    Exercise = .data$exercise,
+    Workouts = .data$workout_count,
+    `Latest recorded max` = format_lb(.data$latest_recorded_max_weight_lb),
+    `All-time recorded max` = format_lb(.data$all_time_max_weight_lb),
+    `Change from first` = format_change_lb(.data$change_from_first_recorded_max_weight_lb),
+    `Latest volume` = format_lb(.data$latest_exercise_volume_lb),
+    `Best volume` = format_lb(.data$all_time_highest_exercise_volume_lb),
+    Note = .data$progress_note
+  )
 
 session_table <- session_summary |>
   dplyr::transmute(
@@ -54,7 +86,8 @@ bslib::layout_column_wrap(
   bslib::value_box("Recorded sets", scales::comma(metric_sets), theme = "secondary"),
   bslib::value_box("Repetitions", scales::comma(metric_reps), theme = "success"),
   bslib::value_box("Total volume", paste(scales::comma(metric_volume), "lb"), theme = "info"),
-  bslib::value_box("Latest workout", format(metric_latest, "%b %d, %Y"), theme = "warning")
+  bslib::value_box("Latest workout", format(metric_latest, "%b %d, %Y"), theme = "warning"),
+  bslib::value_box("Latest volume", paste(scales::comma(metric_latest_volume), "lb"), theme = "danger")
 )
 ```
 
@@ -63,7 +96,19 @@ bslib::layout_column_wrap(
 ```{r}
 #| fig-width: 8
 #| fig-height: 5
-plot_session_volume(session_summary)
+interactive_lifting_plot(plot_session_volume(session_summary))
+```
+
+# Progress Highlights
+
+## Recorded Load Highlights
+
+```{r}
+knitr::kable(
+  exercise_progress_table,
+  align = c("l", "r", "r", "r", "r", "r", "r", "l"),
+  caption = "Recorded exercise progress from the canonical set-level data. Exact exercise variants remain separate."
+)
 ```
 
 # Exercise Progress
@@ -73,7 +118,7 @@ plot_session_volume(session_summary)
 ```{r}
 #| fig-width: 13
 #| fig-height: 12
-plot_exercise_volume(exercise_summary)
+interactive_lifting_plot(plot_exercise_volume(exercise_summary))
 ```
 
 ## Maximum Weight By Exercise
@@ -81,7 +126,7 @@ plot_exercise_volume(exercise_summary)
 ```{r}
 #| fig-width: 13
 #| fig-height: 12
-plot_exercise_max_weight(exercise_summary)
+interactive_lifting_plot(plot_exercise_max_weight(exercise_summary))
 ```
 
 # Set Performance
@@ -91,7 +136,7 @@ plot_exercise_max_weight(exercise_summary)
 ```{r}
 #| fig-width: 13
 #| fig-height: 12
-plot_set_performance(sets)
+interactive_lifting_plot(plot_set_performance(sets))
 ```
 
 # Data / QA
@@ -115,3 +160,4 @@ knitr::kable(
   caption = "Lightweight QA checks run against data/processed/lifting_sets.csv."
 )
 ```
+

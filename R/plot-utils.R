@@ -8,3 +8,38 @@ lifting_plot_theme <- function(base_size = 11) {
       legend.position = "bottom"
     )
 }
+
+interactive_lifting_plot <- function(plot, tooltip = "text") {
+  if (!requireNamespace("plotly", quietly = TRUE)) {
+    rlang::abort(
+      c(
+        "Plotly is required for interactive dashboard plots.",
+        i = "Install project dependencies with `renv::restore()`."
+      ),
+      class = "zlifts_missing_plotly"
+    )
+  }
+
+  plotly::ggplotly(plot, tooltip = tooltip) |>
+    plotly::config(displaylogo = FALSE)
+}
+
+format_hover_date <- function(x) {
+  format(as.Date(x), "%Y-%m-%d")
+}
+
+format_hover_lb <- function(x) {
+  dplyr::if_else(
+    is.na(x),
+    "Missing",
+    paste0(scales::comma(x), " lb")
+  )
+}
+
+format_hover_count <- function(x) {
+  dplyr::if_else(
+    is.na(x),
+    "Missing",
+    scales::comma(x)
+  )
+}

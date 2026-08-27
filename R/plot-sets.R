@@ -7,10 +7,25 @@
 plot_set_performance <- function(sets, ncol = 3) {
   check_required_columns(
     sets,
-    c("date", "exercise", "weight_lb", "reps")
+    c("date", "set_number", "exercise", "weight_lb", "reps", "volume_lb")
   )
 
-  ggplot2::ggplot(sets, ggplot2::aes(x = .data$date, y = .data$weight_lb)) +
+  sets <- dplyr::mutate(
+    sets,
+    hover_text = paste0(
+      "Date: ", format_hover_date(.data$date),
+      "<br>Exercise: ", .data$exercise,
+      "<br>Set: ", format_hover_count(.data$set_number),
+      "<br>Weight: ", format_hover_lb(.data$weight_lb),
+      "<br>Reps: ", format_hover_count(.data$reps),
+      "<br>Volume: ", format_hover_lb(.data$volume_lb)
+    )
+  )
+
+  ggplot2::ggplot(
+    sets,
+    ggplot2::aes(x = .data$date, y = .data$weight_lb, text = .data$hover_text)
+  ) +
     ggplot2::geom_point(
       ggplot2::aes(size = .data$reps),
       position = ggplot2::position_jitter(width = 0.18, height = 0),
@@ -30,4 +45,3 @@ plot_set_performance <- function(sets, ncol = 3) {
     ) +
     lifting_plot_theme()
 }
-

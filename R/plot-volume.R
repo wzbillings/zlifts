@@ -8,12 +8,28 @@
 plot_exercise_volume <- function(exercise_summary, ncol = 3) {
   check_required_columns(
     exercise_summary,
-    c("date", "exercise", "total_volume_lb")
+    c("date", "exercise", "sets", "total_reps", "total_volume_lb")
+  )
+
+  exercise_summary <- dplyr::mutate(
+    exercise_summary,
+    hover_text = paste0(
+      "Date: ", format_hover_date(.data$date),
+      "<br>Exercise: ", .data$exercise,
+      "<br>Sets: ", format_hover_count(.data$sets),
+      "<br>Reps: ", format_hover_count(.data$total_reps),
+      "<br>Total volume: ", format_hover_lb(.data$total_volume_lb)
+    )
   )
 
   ggplot2::ggplot(
     exercise_summary,
-    ggplot2::aes(x = .data$date, y = .data$total_volume_lb, group = .data$exercise)
+    ggplot2::aes(
+      x = .data$date,
+      y = .data$total_volume_lb,
+      group = .data$exercise,
+      text = .data$hover_text
+    )
   ) +
     ggplot2::geom_line(linewidth = 0.7, colour = "#3b6ea8", na.rm = TRUE) +
     ggplot2::geom_point(size = 2.4, colour = "#214f7a", na.rm = TRUE) +
@@ -35,4 +51,3 @@ plot_exercise_volume <- function(exercise_summary, ncol = 3) {
     ) +
     lifting_plot_theme()
 }
-
