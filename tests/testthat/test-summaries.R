@@ -1,0 +1,47 @@
+test_that("seed set data preserve expected rows and activities", {
+  skip_if_no_seed_data()
+  sets <- read_lifting_sets(seed_lifting_sets_path())
+
+  expect_s3_class(sets, "tbl_df")
+  expect_equal(nrow(sets), 75)
+  expect_equal(dplyr::n_distinct(sets$activity_id), 3)
+})
+
+test_that("session summaries reproduce validated Garmin totals", {
+  skip_if_no_seed_data()
+  sessions <- read_lifting_sets(seed_lifting_sets_path()) |>
+    summarize_sessions() |>
+    dplyr::arrange(.data$date)
+
+  expect_equal(sessions$total_volume_lb, c(18805, 25665, 33325))
+  expect_equal(sessions$total_sets, c(23L, 26L, 26L))
+  expect_equal(sessions$total_reps, c(336L, 348L, 380L))
+})
+
+test_that("exercise summaries use exact exercise names and expected measures", {
+  skip_if_no_seed_data()
+  summaries <- read_lifting_sets(seed_lifting_sets_path()) |>
+    summarize_exercises()
+
+  expect_true(all(c(
+    "activity_id", "date", "exercise", "movement_group", "sets",
+    "total_reps", "total_volume_lb", "max_weight_lb", "mean_weight_lb",
+    "max_set_volume_lb"
+  ) %in% names(summaries)))
+  expect_equal(
+    summaries |>
+      dplyr::filter(.data$date == as.Date("2026-08-26"), .data$exercise == "Leg Press") |>
+      dplyr::pull(.data$total_volume_lb),
+    9125
+  )
+})
+
+test_that("weighted set volume is reps times weight", {
+  skip_if_no_seed_data()
+  sets <- read_lifting_sets(seed_lifting_sets_path())
+  weighted <- sets |>
+    dplyr::filter(!is.na(.data$reps), !is.na(.data$weight_lb), !is.na(.data$volume_lb))
+
+  expect_equal(weighted$volume_lb, weighted$reps * weighted$weight_lb)
+})
+
