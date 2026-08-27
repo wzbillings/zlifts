@@ -1,0 +1,7 @@
+inst/reference-plots/
+dashboard/_site/
+check/
+garminlifting.Rcheck/
+*.tar.gz
+*.Rcheck/
+

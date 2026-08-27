@@ -1,0 +1,15 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^dashboard/_site$
+^dashboard/\.quarto$
+^renv$
+^renv\.lock$
+^\.gitignore$
+^\.superpowers$
+^dashboard$
+^check$
+^.*\.tar\.gz$
+^\.renvignore$
+^data$
+^.*\.Rcheck$
+

@@ -1,0 +1,22 @@
+Package: garminlifting
+Title: Longitudinal Garmin Strength Training Analysis
+Version: 0.0.0.9000
+Authors@R: person("Zane", role = c("aut", "cre"), email = "zane@example.com")
+Description: Reusable data loading, validation, summary, and plotting tools
+    for longitudinal analysis of normalized Garmin strength-training set data.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+Depends:
+    R (>= 4.1)
+Imports:
+    dplyr,
+    ggplot2,
+    readr,
+    rlang,
+    scales,
+    tidyr
+Suggests:
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+Config/roxygen2/version: 8.1.0
