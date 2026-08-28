@@ -2,6 +2,7 @@ exercise_raw,exercise,movement_group,equipment_type,review_status,notes
 Chess Press with Band,Chest Press,Chest Press,machine,reviewed,User-supplied spelling. Current data uses Chest Press with Band.
 Chest Press with Band,Chest Press,Chest Press,machine,reviewed,Current Garmin export spelling.
 Suspension Chest Press,Chest Press,Chest Press,machine,reviewed,Defaulted to machine after canonical Chest Press mapping.
+Shoulder Press,Shoulder Press,Shoulder Press,machine,reviewed,Conservative mapping for Garmin Splits import.
 Crunch,Ab Crunch,Ab Crunch,machine,reviewed,
 Weighted Crunch,Ab Crunch,Ab Crunch,machine,reviewed,
 Cable Biceps Curl,Biceps Curl,Biceps Curl,machine,reviewed,User override: machine despite Garmin cable label.

@@ -27,5 +27,5 @@ test_that("source_zlifts loads project-local analysis modules", {
   sets <- analysis_env$read_lifting_sets(file.path(repo_root, "data", "processed", "lifting_sets.csv"))
 
   expect_s3_class(sets, "tbl_df")
-  expect_equal(nrow(sets), 75)
+  expect_equal(nrow(sets), 105)
 })
