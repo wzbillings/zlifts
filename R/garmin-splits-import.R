@@ -86,7 +86,7 @@ parse_garmin_splits_filename <- function(path) {
 
 parse_garmin_numeric_column <- function(x, column) {
   values <- trimws(as.character(x))
-  missing <- is.na(x) | values == ""
+  missing <- is.na(x) | toupper(values) %in% c("", "NA", "N/A", "--")
   parsed <- readr::parse_number(
     values,
     na = c("", "NA", "N/A", "--"),
@@ -126,7 +126,7 @@ parse_garmin_integer_column <- function(x, column) {
 
 parse_garmin_duration_seconds <- function(x, column = "duration") {
   values <- trimws(as.character(x))
-  missing <- is.na(x) | values == ""
+  missing <- is.na(x) | toupper(values) %in% c("", "NA", "N/A", "--")
   out <- rep(NA_real_, length(values))
 
   for (index in which(!missing)) {
@@ -336,6 +336,15 @@ class_garmin_ingest_report <- function(report) {
   report
 }
 
+
+format_garmin_ingest_error <- function(error) {
+  if (inherits(error, "rlang_error")) {
+    return(rlang::cnd_message(error))
+  }
+
+  conditionMessage(error)
+}
+
 existing_activity_counts <- function(sets) {
   counts <- table(sets$activity_id, useNA = "no")
   stats::setNames(as.integer(counts), names(counts))
@@ -378,6 +387,7 @@ ingest_garmin_splits <- function(paths = NULL,
   existing_sets <- read_lifting_sets(lifting_sets_path, apply_mapping = FALSE)
   current_counts <- existing_activity_counts(existing_sets)
   current_activity_ids <- names(current_counts)
+  existing_activity_ids <- current_activity_ids
   next_day <- next_append_day(existing_sets)
   reports <- list()
   parsed_rows <- list()
@@ -393,7 +403,7 @@ ingest_garmin_splits <- function(paths = NULL,
       reports[[length(reports) + 1L]] <- garmin_ingest_report_row(
         file = path,
         status = "failed",
-        message = conditionMessage(metadata_result$error),
+        message = format_garmin_ingest_error(metadata_result$error),
         failed_rows = 0L
       )
       next
@@ -402,11 +412,16 @@ ingest_garmin_splits <- function(paths = NULL,
     activity_id <- metadata_result$value$activity_id
     if (activity_id %in% current_activity_ids) {
       skipped_rows <- unname(current_counts[[activity_id]])
+      if (activity_id %in% existing_activity_ids) {
+        skip_message <- paste0("Activity id ", activity_id, " already exists in ", lifting_sets_path, "; skipped.")
+      } else {
+        skip_message <- paste0("Activity id ", activity_id, " was already parsed earlier in this run; skipped.")
+      }
       reports[[length(reports) + 1L]] <- garmin_ingest_report_row(
         file = path,
         activity_id = activity_id,
         status = "skipped",
-        message = paste0("Activity id ", activity_id, " already exists in ", lifting_sets_path, "; skipped."),
+        message = skip_message,
         skipped_rows = skipped_rows
       )
       next
@@ -430,7 +445,7 @@ ingest_garmin_splits <- function(paths = NULL,
         file = path,
         activity_id = activity_id,
         status = "failed",
-        message = conditionMessage(parsed_result$error),
+        message = format_garmin_ingest_error(parsed_result$error),
         failed_rows = 0L
       )
       next

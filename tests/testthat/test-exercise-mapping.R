@@ -53,7 +53,7 @@ test_that("exercise mapping is applied and unmapped names fail clearly", {
   expect_equal(mapped[["exercise_raw"]], "Chest Press with Band")
 })
 
-test_that("seed lifting data use canonical exercise names and equipment types", {
+test_that("seed lifting dataset uses canonical exercise names and equipment types", {
   skip_if_no_seed_data()
 
   sets <- read_lifting_sets(seed_lifting_sets_path())

@@ -28,3 +28,18 @@ test_that("validation accepts text volume match flags", {
   expect_true(all(result$status == "pass"))
 })
 
+
+test_that("validation fails when mapped canonical fields are missing", {
+  skip_if_no_seed_data()
+  sets <- read_lifting_sets(seed_lifting_sets_path(), apply_mapping = FALSE)
+  sets$exercise[[1]] <- NA_character_
+  sets$movement_group[[2]] <- NA_character_
+  sets$equipment_type[[3]] <- NA_character_
+
+  result <- validate_lifting_data(sets)
+  mapping_check <- result[result[["check"]] == "exercise_names_mapped", ]
+
+  expect_equal(mapping_check[["status"]], "fail")
+  expect_equal(mapping_check[["n"]], 3L)
+  expect_match(mapping_check[["message"]], "do not match the exercise mapping", fixed = TRUE)
+})

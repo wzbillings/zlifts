@@ -82,14 +82,14 @@ The dashboard has five sections: Overview, Progress Highlights, Exercise Progres
 
 The `.github/workflows/publish-dashboard.yml` workflow restores R packages from `renv.lock`, runs tests, renders `dashboard/_site`, uploads that directory as a GitHub Pages artifact, and deploys it. GitHub Pages is configured to use "GitHub Actions" as the source.
 
-## Future workout flow
+## Workout import flow
 
-Future ingestion is intentionally not implemented yet. Daily updates currently happen by committing normalized rows to `data/processed/lifting_sets.csv` and keeping `data/processed/exercise_mapping.csv` in sync when new Garmin names appear. Conceptually, new workouts should enter like this:
+Garmin Splits ingestion is implemented through `scripts/ingest-workouts.R`. Daily updates happen by placing local raw exports in `data/raw/workouts/`, checking them, writing normalized rows to `data/processed/lifting_sets.csv`, and keeping `data/processed/exercise_mapping.csv` in sync when new Garmin names appear. New workouts enter like this:
 
 ```text
 local-only Garmin Splits CSV export
         ->
-future ingestion pipeline
+scripts/ingest-workouts.R --check, then scripts/ingest-workouts.R --write
         ->
 canonical set-level records
         ->
@@ -104,9 +104,9 @@ Place daily Garmin Connect "Export Splits to CSV" files in `data/raw/workouts/` 
 YYYY-MM-DD-garmin-splits-<garmin-activity-id>.csv
 ```
 
-The leading date is the workout date. The trailing Garmin activity id is the stable activity identifier and importer dedupe key; do not rely on date alone. The Splits CSV supplies set number, exercise name, time, rest, reps, weight, and Garmin-reported volume. If a Splits CSV does not carry a workout name, the importer should set `workout_name` to `Garmin Strength YYYY-MM-DD (<garmin-activity-id>)` until the maintainer curates `workout_name` in the processed data before commit.
+The leading date is the workout date. The trailing Garmin activity id is the stable activity identifier and importer dedupe key; do not rely on date alone. The Splits CSV supplies set number, exercise name, time, rest, reps, weight, and Garmin-reported volume. Splits CSV exports do not carry a workout name, so the importer sets `workout_name` to `Garmin Strength YYYY-MM-DD (<garmin-activity-id>)` until the maintainer curates `workout_name` in the processed data before commit.
 
-When that ingestion layer is added, it should append normalized set-level records, require any new `exercise_raw` values to be added to the mapping, and let the existing project-local functions regenerate summaries and dashboard output. Raw Garmin source files should remain local unless a maintainer intentionally creates a reduced, privacy-reviewed test fixture.
+The importer appends normalized set-level records, requires any new `exercise_raw` values to be added to the mapping, and lets the existing project-local functions regenerate summaries and dashboard output. Raw Garmin source files should remain local unless a maintainer intentionally creates a reduced, privacy-reviewed test fixture.
 
 ## License
 

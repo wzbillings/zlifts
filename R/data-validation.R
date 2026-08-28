@@ -46,11 +46,11 @@ validate_lifting_data <- function(sets, tolerance = 1e-8, exercise_mapping = NUL
       nzchar(trimws(mapped_exercises$exercise_raw))
   ])
   exercise_name_mismatch <- !is.na(mapped_exercises$.mapped_exercise) &
-    mapped_exercises$exercise != mapped_exercises$.mapped_exercise
+    (is.na(mapped_exercises$exercise) | mapped_exercises$exercise != mapped_exercises$.mapped_exercise)
   movement_group_mismatch <- !is.na(mapped_exercises$.mapped_movement_group) &
-    mapped_exercises$movement_group != mapped_exercises$.mapped_movement_group
+    (is.na(mapped_exercises$movement_group) | mapped_exercises$movement_group != mapped_exercises$.mapped_movement_group)
   equipment_type_mismatch <- !is.na(mapped_exercises$.mapped_equipment_type) &
-    mapped_exercises$equipment_type != mapped_exercises$.mapped_equipment_type
+    (is.na(mapped_exercises$equipment_type) | mapped_exercises$equipment_type != mapped_exercises$.mapped_equipment_type)
   exercise_mapping_mismatch <- rowSums(
     cbind(exercise_name_mismatch, movement_group_mismatch, equipment_type_mismatch),
     na.rm = TRUE

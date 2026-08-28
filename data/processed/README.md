@@ -4,7 +4,7 @@
 
 Derived summaries, charts, and dashboard tables are recalculated from this file rather than committed as separate CSV snapshots. Raw Garmin exports belong under `data/raw/workouts/` for local-only ingestion work, not in this directory.
 
-Garmin Connect Splits CSV is the selected future ingestion source. Before normalization, required workout date and stable activity id metadata comes from the ignored raw filename:
+Garmin Connect Splits CSV is the selected ingestion source. Before normalization, required workout date and stable activity id metadata comes from the ignored raw filename:
 
 ```text
 YYYY-MM-DD-garmin-splits-<garmin-activity-id>.csv
