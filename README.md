@@ -14,7 +14,7 @@ Volume is calculated as `reps * weight_lb`. Missing fields are preserved rather 
 
 This public repository commits only normalized analysis-ready lifting data at `data/processed/lifting_sets.csv`. Derived summaries are regenerated from that file by project-local R functions and are not committed as canonical data.
 
-Raw Garmin Connect HTML or HTM pages, FIT files, ZIP exports, and similar source artifacts are local-only by default. They can contain location, device, profile, or physiology metadata that the public dashboard does not need, so `.gitignore` blocks files under `data/raw/workouts/` except for that directory's README.
+Raw Garmin Connect Splits CSV exports are the selected daily ingestion source, but they are still local-only by default. Saved HTML or HTM pages, FIT files, ZIP exports, and similar non-primary source artifacts can contain location, device, profile, or physiology metadata that the public dashboard does not need, so `.gitignore` blocks files under `data/raw/workouts/` except for that directory's README.
 
 The dashboard and GitHub Pages workflow must read committed processed data only. Raw Garmin exports are not dashboard inputs and must not be copied into rendered output.
 
@@ -40,7 +40,7 @@ zlifts/
 `-- renv/
 ```
 
-`data/raw/workouts/` is reserved for local-only Garmin source exports once an ingestion step exists. `data/processed/lifting_sets.csv` is the longitudinal source table used by the dashboard. R modules in `R/` are loaded with `scripts/source-analysis.R`; they are project code, not a package API. The original seed analysis script and PNG previews are archived in `archive/reference-plots/`; the dashboard does not read them.
+`data/raw/workouts/` is reserved for local-only Garmin Splits CSV exports and other private Garmin source artifacts used while developing ingestion. `data/processed/lifting_sets.csv` is the longitudinal source table used by the dashboard. R modules in `R/` are loaded with `scripts/source-analysis.R`; they are project code, not a package API. The original seed analysis script and PNG previews are archived in `archive/reference-plots/`; the dashboard does not read them.
 
 ## Restore dependencies
 
@@ -97,6 +97,14 @@ lifting_sets.csv
         ->
 summaries + dashboard
 ```
+
+Place daily Garmin Connect "Export Splits to CSV" files in `data/raw/workouts/` using this filename convention:
+
+```text
+YYYY-MM-DD-garmin-splits-<garmin-activity-id>.csv
+```
+
+The leading date is the workout date. The trailing Garmin activity id is the stable activity identifier and importer dedupe key; do not rely on date alone. The Splits CSV supplies set number, exercise name, time, rest, reps, weight, and Garmin-reported volume. If a Splits CSV does not carry a workout name, the importer should set `workout_name` to `Garmin Strength YYYY-MM-DD (<garmin-activity-id>)` until the maintainer curates `workout_name` in the processed data before commit.
 
 When that ingestion layer is added, it should append normalized set-level records, require any new `exercise_raw` values to be added to the mapping, and let the existing project-local functions regenerate summaries and dashboard output. Raw Garmin source files should remain local unless a maintainer intentionally creates a reduced, privacy-reviewed test fixture.
 
