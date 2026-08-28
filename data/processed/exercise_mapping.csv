@@ -4,7 +4,7 @@ Chest Press with Band,Chest Press,Chest Press,machine,reviewed,Current Garmin ex
 Suspension Chest Press,Chest Press,Chest Press,machine,reviewed,Defaulted to machine after canonical Chest Press mapping.
 Crunch,Ab Crunch,Ab Crunch,machine,reviewed,
 Weighted Crunch,Ab Crunch,Ab Crunch,machine,reviewed,
-Cable Biceps Curl,Biceps Curl,Biceps Curl,cable,reviewed,
+Cable Biceps Curl,Biceps Curl,Biceps Curl,machine,reviewed,User override: machine despite Garmin cable label.
 Dumbbell Biceps Curl,Biceps Curl,Biceps Curl,dumbbell,inferred,Aligned with biceps curl mappings because this raw name exists in current data.
 Curl,Biceps Curl,Biceps Curl,machine,reviewed,
 Triceps Press-down,Triceps Pulldown,Triceps Pulldown,machine,reviewed,

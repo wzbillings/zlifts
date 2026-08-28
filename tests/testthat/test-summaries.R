@@ -44,7 +44,7 @@ test_that("exercise summaries distinguish canonical equipment types", {
   biceps <- summaries |>
     dplyr::filter(.data[["exercise"]] == "Biceps Curl")
 
-  expect_setequal(biceps[["equipment_type"]], c("cable", "dumbbell", "machine"))
+  expect_setequal(biceps[["equipment_type"]], c("dumbbell", "machine"))
 })
 
 test_that("weighted set volume is reps times weight", {

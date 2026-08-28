@@ -65,7 +65,7 @@ test_that("seed lifting data use canonical exercise names and equipment types", 
   expect_true("Seated Leg Press" %in% sets[["exercise"]])
   expect_true("Ab Crunch" %in% sets[["exercise"]])
   expect_true("Calf Extension" %in% sets[["exercise"]])
-  expect_equal(unique(sets[["equipment_type"]][sets[["exercise_raw"]] == "Cable Biceps Curl"]), "cable")
+  expect_equal(unique(sets[["equipment_type"]][sets[["exercise_raw"]] == "Cable Biceps Curl"]), "machine")
   expect_equal(unique(sets[["equipment_type"]][sets[["exercise_raw"]] == "Dumbbell Biceps Curl"]), "dumbbell")
   expect_equal(unique(sets[["equipment_type"]][sets[["exercise_raw"]] == "Curl"]), "machine")
 })

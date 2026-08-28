@@ -44,7 +44,7 @@ test_that("exercise progress uses canonical names and repeated-observation statu
   biceps <- progress |>
     dplyr::filter(.data[["exercise"]] == "Biceps Curl")
 
-  expect_setequal(biceps[["equipment_type"]], c("cable", "dumbbell", "machine"))
+  expect_setequal(biceps[["equipment_type"]], c("dumbbell", "machine"))
 
   lat_pull_down <- progress |>
     dplyr::filter(.data$exercise == "Lat Pull-down")
