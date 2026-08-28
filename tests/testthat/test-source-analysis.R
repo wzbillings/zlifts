@@ -17,6 +17,8 @@ test_that("source_zlifts loads project-local analysis modules", {
     "read_exercise_mapping",
     "apply_exercise_mapping",
     "validate_lifting_data",
+    "parse_garmin_splits_csv",
+    "ingest_garmin_splits",
     "summarize_sessions",
     "summarize_exercises",
     "plot_session_volume"
