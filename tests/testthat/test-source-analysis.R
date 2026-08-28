@@ -14,7 +14,11 @@ test_that("source_zlifts loads project-local analysis modules", {
 
   expect_true(all(c(
     "read_lifting_sets",
+    "read_exercise_mapping",
+    "apply_exercise_mapping",
     "validate_lifting_data",
+    "parse_garmin_splits_csv",
+    "ingest_garmin_splits",
     "summarize_sessions",
     "summarize_exercises",
     "plot_session_volume"

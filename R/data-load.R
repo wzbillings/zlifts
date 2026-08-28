@@ -5,9 +5,15 @@
 #' as character values, checks the expected columns, and returns a tibble.
 #'
 #' @param path Path to the canonical `lifting_sets.csv` file.
+#' @param apply_mapping Whether to apply the canonical exercise mapping before
+#'   returning the data.
+#' @param exercise_mapping Optional mapping tibble or path. Defaults to
+#'   exercise_mapping.csv beside path when apply_mapping is TRUE.
 #'
 #' @return A tibble with one row per recorded lifting set.
-read_lifting_sets <- function(path = file.path("data", "processed", "lifting_sets.csv")) {
+read_lifting_sets <- function(path = file.path("data", "processed", "lifting_sets.csv"),
+                              apply_mapping = TRUE,
+                              exercise_mapping = NULL) {
   if (!file.exists(path)) {
     rlang::abort(
       c("Cannot find lifting set data.", x = paste("Path does not exist:", path)),
@@ -27,6 +33,7 @@ read_lifting_sets <- function(path = file.path("data", "processed", "lifting_set
       exercise_raw = readr::col_character(),
       exercise = readr::col_character(),
       movement_group = readr::col_character(),
+      equipment_type = readr::col_character(),
       set_type = readr::col_character(),
       time_raw = readr::col_character(),
       time_seconds = readr::col_double(),
@@ -43,9 +50,21 @@ read_lifting_sets <- function(path = file.path("data", "processed", "lifting_set
 
   check_required_columns(sets)
 
-  dplyr::mutate(
+  sets <- dplyr::mutate(
     sets,
     date = as.Date(.data$date),
     volume_matches_garmin = parse_logical_text(.data$volume_matches_garmin)
   )
+
+  if (is.null(exercise_mapping)) {
+    exercise_mapping <- file.path(dirname(path), "exercise_mapping.csv")
+  }
+  attr(sets, "exercise_mapping_path") <- exercise_mapping
+
+  if (apply_mapping) {
+    sets <- apply_exercise_mapping(sets, exercise_mapping)
+    attr(sets, "exercise_mapping_path") <- exercise_mapping
+  }
+
+  sets
 }

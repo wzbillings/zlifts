@@ -48,6 +48,7 @@ format_change_lb <- function(x) {
 exercise_progress_table <- exercise_progress |>
   dplyr::transmute(
     Exercise = .data$exercise,
+    Type = format_equipment_type(.data$equipment_type),
     Workouts = .data$workout_count,
     `Latest recorded max` = format_lb(.data$latest_recorded_max_weight_lb),
     `All-time recorded max` = format_lb(.data$all_time_max_weight_lb),
@@ -106,8 +107,8 @@ interactive_lifting_plot(plot_session_volume(session_summary))
 ```{r}
 knitr::kable(
   exercise_progress_table,
-  align = c("l", "r", "r", "r", "r", "r", "r", "l"),
-  caption = "Recorded exercise progress from the canonical set-level data. Exact exercise variants remain separate."
+  align = c("l", "l", "r", "r", "r", "r", "r", "r", "l"),
+  caption = "Recorded exercise progress from the canonical set-level data. Garmin source names remain preserved in exercise_raw, and equipment variants remain explicit."
 )
 ```
 

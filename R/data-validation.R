@@ -6,10 +6,12 @@
 #'
 #' @param sets A set-level tibble, usually from read_lifting_sets().
 #' @param tolerance Numeric tolerance used when comparing calculated volumes.
+#' @param exercise_mapping Optional mapping tibble or path used to verify
+#'   exercise, movement_group, and equipment_type fields.
 #'
 #' @return A tibble with columns `check`, `status`, `message`, and `n`, with
 #'   class `zlifts_validation`.
-validate_lifting_data <- function(sets, tolerance = 1e-8) {
+validate_lifting_data <- function(sets, tolerance = 1e-8, exercise_mapping = NULL) {
   check_required_columns(sets)
   volume_matches_garmin <- parse_logical_text(sets$volume_matches_garmin)
 
@@ -30,6 +32,38 @@ validate_lifting_data <- function(sets, tolerance = 1e-8) {
 
   exact_duplicate_records <- duplicated(sets) | duplicated(sets, fromLast = TRUE)
   false_match_flags <- !is.na(volume_matches_garmin) & !volume_matches_garmin
+
+  if (is.null(exercise_mapping)) {
+    exercise_mapping <- attr(sets, "exercise_mapping_path", exact = TRUE)
+  }
+  mapped_exercises <- attach_exercise_mapping_fields(
+    dplyr::select(sets, dplyr::all_of(c("exercise_raw", "exercise", "movement_group", "equipment_type"))),
+    exercise_mapping
+  )
+  unmapped_exercises <- unique(mapped_exercises$exercise_raw[
+    is.na(mapped_exercises$.mapped_exercise) &
+      !is.na(mapped_exercises$exercise_raw) &
+      nzchar(trimws(mapped_exercises$exercise_raw))
+  ])
+  exercise_name_mismatch <- !is.na(mapped_exercises$.mapped_exercise) &
+    (is.na(mapped_exercises$exercise) | mapped_exercises$exercise != mapped_exercises$.mapped_exercise)
+  movement_group_mismatch <- !is.na(mapped_exercises$.mapped_movement_group) &
+    (is.na(mapped_exercises$movement_group) | mapped_exercises$movement_group != mapped_exercises$.mapped_movement_group)
+  equipment_type_mismatch <- !is.na(mapped_exercises$.mapped_equipment_type) &
+    (is.na(mapped_exercises$equipment_type) | mapped_exercises$equipment_type != mapped_exercises$.mapped_equipment_type)
+  exercise_mapping_mismatch <- rowSums(
+    cbind(exercise_name_mismatch, movement_group_mismatch, equipment_type_mismatch),
+    na.rm = TRUE
+  ) > 0
+  exercise_mapping_failures <- length(unmapped_exercises) + sum(exercise_mapping_mismatch, na.rm = TRUE)
+  exercise_mapping_message <- dplyr::case_when(
+    length(unmapped_exercises) > 0 ~ paste(
+      "Unmapped Garmin exercise name(s):",
+      paste(unmapped_exercises, collapse = ", ")
+    ),
+    any(exercise_mapping_mismatch, na.rm = TRUE) ~ "Mapped exercise, movement_group, or equipment_type fields do not match the exercise mapping.",
+    TRUE ~ "Exercise names are covered by the exercise mapping."
+  )
 
   results <- dplyr::bind_rows(
     check_row("required_columns", "pass", "All required columns are present.", 0L),
@@ -74,6 +108,12 @@ validate_lifting_data <- function(sets, tolerance = 1e-8) {
       if (any(garmin_mismatch) || any(false_match_flags)) "fail" else "pass",
       if (any(garmin_mismatch) || any(false_match_flags)) "Garmin volume and calculated volume disagree for at least one set." else "Garmin volume and calculated volume agree where comparable.",
       sum(garmin_mismatch | false_match_flags)
+    ),
+    check_row(
+      "exercise_names_mapped",
+      if (exercise_mapping_failures > 0) "fail" else "pass",
+      exercise_mapping_message,
+      exercise_mapping_failures
     ),
     check_row(
       "no_exact_duplicate_records",

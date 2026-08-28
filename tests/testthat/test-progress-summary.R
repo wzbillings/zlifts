@@ -12,7 +12,7 @@ test_that("session progress metrics are calculated from set data", {
   expect_equal(progress$cumulative_volume_lb, 77795)
 })
 
-test_that("exercise progress preserves exact variants and repeated-observation status", {
+test_that("exercise progress uses canonical names and repeated-observation status", {
   skip_if_no_seed_data()
   sets <- read_lifting_sets(seed_lifting_sets_path())
 
@@ -20,7 +20,7 @@ test_that("exercise progress preserves exact variants and repeated-observation s
 
   expect_s3_class(progress, "tbl_df")
   expect_true(all(c(
-    "exercise", "workout_count", "first_workout_date", "latest_workout_date",
+    "exercise", "equipment_type", "workout_count", "first_workout_date", "latest_workout_date",
     "latest_recorded_max_weight_lb", "all_time_max_weight_lb",
     "change_from_first_recorded_max_weight_lb", "latest_exercise_volume_lb",
     "all_time_highest_exercise_volume_lb", "has_repeated_observations",
@@ -28,7 +28,7 @@ test_that("exercise progress preserves exact variants and repeated-observation s
   ) %in% names(progress)))
 
   leg_press <- progress |>
-    dplyr::filter(.data$exercise == "Leg Press")
+    dplyr::filter(.data$exercise == "Seated Leg Press", .data$equipment_type == "machine")
 
   expect_equal(nrow(leg_press), 1)
   expect_equal(leg_press$workout_count, 3L)
@@ -40,6 +40,11 @@ test_that("exercise progress preserves exact variants and repeated-observation s
   expect_equal(leg_press$latest_exercise_volume_lb, 9125)
   expect_equal(leg_press$all_time_highest_exercise_volume_lb, 9125)
   expect_true(leg_press$has_repeated_observations)
+
+  biceps <- progress |>
+    dplyr::filter(.data[["exercise"]] == "Biceps Curl")
+
+  expect_setequal(biceps[["equipment_type"]], c("dumbbell", "machine"))
 
   lat_pull_down <- progress |>
     dplyr::filter(.data$exercise == "Lat Pull-down")
