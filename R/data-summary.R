@@ -1,7 +1,7 @@
-#' Summarize lifting sets by exact exercise and workout
+#' Summarize lifting sets by canonical exercise and workout
 #'
-#' Summaries preserve exact Garmin exercise names. Movement groups are retained
-#' for organization, but different exercise variants are not merged.
+#' Summaries use canonical exercise names. Movement groups are retained
+#' for organization and come from the exercise mapping.
 #'
 #' @param sets A set-level tibble, usually from read_lifting_sets().
 #'
@@ -10,7 +10,7 @@ summarize_exercises <- function(sets) {
   check_required_columns(sets)
 
   dplyr::mutate(sets, calculated_volume_lb = set_volume(sets)) |>
-    dplyr::group_by(.data$activity_id, .data$date, .data$exercise) |>
+    dplyr::group_by(.data$activity_id, .data$date, .data$exercise, .data$equipment_type) |>
     dplyr::summarise(
       day = dplyr::first(.data$day),
       workout_name = first_or_na(.data$workout_name),
@@ -24,11 +24,11 @@ summarize_exercises <- function(sets) {
       .groups = "drop"
     ) |>
     dplyr::select(dplyr::all_of(c(
-      "activity_id", "day", "date", "workout_name", "exercise",
+      "activity_id", "day", "date", "workout_name", "exercise", "equipment_type",
       "movement_group", "sets", "total_reps", "total_volume_lb",
       "max_weight_lb", "mean_weight_lb", "max_set_volume_lb"
     ))) |>
-    dplyr::arrange(.data$date, .data$activity_id, .data$exercise)
+    dplyr::arrange(.data$date, .data$activity_id, .data$exercise, .data$equipment_type)
 }
 
 #' Summarize lifting sets by workout session
@@ -47,7 +47,7 @@ summarize_sessions <- function(sets) {
       total_sets = dplyr::n(),
       total_reps = as.integer(sum_or_na(.data$reps)),
       total_volume_lb = sum_or_na(.data$calculated_volume_lb),
-      exercises = dplyr::n_distinct(.data$exercise),
+      exercises = dplyr::n_distinct(paste(.data$exercise, .data$equipment_type, sep = "\r")),
       .groups = "drop"
     ) |>
     dplyr::select(dplyr::all_of(c(
@@ -59,8 +59,8 @@ summarize_sessions <- function(sets) {
 
 #' Summarize lifting sets by movement group and workout
 #'
-#' Movement groups are meant for organization and coverage. This summary does
-#' not make exercise variants mechanically equivalent.
+#' Movement groups are meant for organization and coverage. This summary uses
+#' the canonical movement_group assigned by the exercise mapping.
 #'
 #' @param sets A set-level tibble, usually from read_lifting_sets().
 #'
@@ -77,7 +77,7 @@ summarize_movement_groups <- function(sets) {
       total_reps = as.integer(sum_or_na(.data$reps)),
       total_volume_lb = sum_or_na(.data$calculated_volume_lb),
       max_recorded_weight_lb = max_or_na(.data$weight_lb),
-      exercise_variants = dplyr::n_distinct(.data$exercise),
+      exercise_variants = dplyr::n_distinct(paste(.data$exercise, .data$equipment_type, sep = "\r")),
       .groups = "drop"
     ) |>
     dplyr::select(dplyr::all_of(c(
@@ -129,14 +129,14 @@ summarize_session_progress <- function(sets) {
 
 #' Summarize recorded exercise progress
 #'
-#' Progress is calculated within exact Garmin exercise names. The summary compares
+#' Progress is calculated within canonical exercise names. The summary compares
 #' the latest recorded max with the first recorded max only when an exercise has
 #' enough observed workouts.
 #'
 #' @param sets A set-level tibble, usually from read_lifting_sets().
 #' @param min_observations Minimum workout count before reporting max-weight change.
 #'
-#' @return A tibble with one row per exact exercise name.
+#' @return A tibble with one row per canonical exercise name.
 summarize_exercise_progress <- function(sets, min_observations = 2L) {
   check_required_columns(sets)
 
@@ -148,43 +148,45 @@ summarize_exercise_progress <- function(sets, min_observations = 2L) {
   }
 
   exercise_summary <- summarize_exercises(sets) |>
-    dplyr::arrange(.data$date, .data$activity_id, .data$exercise)
+    dplyr::arrange(.data$date, .data$activity_id, .data$exercise, .data$equipment_type)
 
   if (nrow(exercise_summary) == 0) {
     return(empty_exercise_progress())
   }
 
   first_observations <- exercise_summary |>
-    dplyr::group_by(.data$exercise) |>
+    dplyr::group_by(.data$exercise, .data$equipment_type) |>
     dplyr::slice_head(n = 1) |>
     dplyr::ungroup() |>
     dplyr::transmute(
       exercise = .data$exercise,
+      equipment_type = .data$equipment_type,
       first_workout_date = .data$date,
       first_recorded_max_weight_lb = .data$max_weight_lb
     )
 
   latest_observations <- exercise_summary |>
-    dplyr::group_by(.data$exercise) |>
+    dplyr::group_by(.data$exercise, .data$equipment_type) |>
     dplyr::slice_tail(n = 1) |>
     dplyr::ungroup() |>
     dplyr::transmute(
       exercise = .data$exercise,
+      equipment_type = .data$equipment_type,
       latest_workout_date = .data$date,
       latest_recorded_max_weight_lb = .data$max_weight_lb,
       latest_exercise_volume_lb = .data$total_volume_lb
     )
 
   exercise_summary |>
-    dplyr::group_by(.data$exercise) |>
+    dplyr::group_by(.data$exercise, .data$equipment_type) |>
     dplyr::summarise(
       workout_count = as.integer(dplyr::n_distinct(.data$activity_id)),
       all_time_max_weight_lb = max_or_na(.data$max_weight_lb),
       all_time_highest_exercise_volume_lb = max_or_na(.data$total_volume_lb),
       .groups = "drop"
     ) |>
-    dplyr::left_join(first_observations, by = "exercise") |>
-    dplyr::left_join(latest_observations, by = "exercise") |>
+    dplyr::left_join(first_observations, by = c("exercise", "equipment_type")) |>
+    dplyr::left_join(latest_observations, by = c("exercise", "equipment_type")) |>
     dplyr::mutate(
       has_repeated_observations = .data$workout_count >= min_observations,
       change_from_first_recorded_max_weight_lb = dplyr::if_else(
@@ -200,7 +202,7 @@ summarize_exercise_progress <- function(sets, min_observations = 2L) {
       )
     ) |>
     dplyr::select(dplyr::all_of(c(
-      "exercise", "workout_count", "first_workout_date", "latest_workout_date",
+      "exercise", "equipment_type", "workout_count", "first_workout_date", "latest_workout_date",
       "latest_recorded_max_weight_lb", "all_time_max_weight_lb",
       "change_from_first_recorded_max_weight_lb", "latest_exercise_volume_lb",
       "all_time_highest_exercise_volume_lb", "has_repeated_observations",
@@ -209,7 +211,7 @@ summarize_exercise_progress <- function(sets, min_observations = 2L) {
     dplyr::arrange(
       dplyr::desc(.data$has_repeated_observations),
       dplyr::desc(.data$all_time_max_weight_lb),
-      .data$exercise
+      .data$exercise, .data$equipment_type
     )
 }
 
@@ -217,6 +219,7 @@ summarize_exercise_progress <- function(sets, min_observations = 2L) {
 empty_exercise_progress <- function() {
   tibble::tibble(
     exercise = character(),
+    equipment_type = character(),
     workout_count = integer(),
     first_workout_date = as.Date(character()),
     latest_workout_date = as.Date(character()),

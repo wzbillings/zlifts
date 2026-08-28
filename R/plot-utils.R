@@ -45,3 +45,20 @@ format_hover_count <- function(x) {
     scales::comma(x)
   )
 }
+
+exercise_display_name <- function(exercise, equipment_type) {
+  label <- as.character(exercise)
+  type <- tolower(trimws(as.character(equipment_type)))
+  show_type <- !is.na(type) & type != "" & type != "machine"
+  label[show_type] <- paste0(label[show_type], " (", type[show_type], ")")
+  label
+}
+
+format_equipment_type <- function(x) {
+  x <- trimws(as.character(x))
+  known <- is.na(x) == FALSE
+  missing <- is.na(x)
+  missing[known] <- x[known] == ""
+  x[missing] <- "unknown"
+  tools::toTitleCase(x)
+}

@@ -6,7 +6,7 @@ Live dashboard: <https://wzbillings.github.io/zlifts/>
 
 ## Data model
 
-The canonical analytical dataset is `data/processed/lifting_sets.csv`. It has one row per recorded set and preserves Garmin's standardized `exercise` name exactly. `movement_group` is only an organizational grouping; loads from different exercise variants are not treated as mechanically equivalent unless a future analysis explicitly asks for that.
+The canonical analytical dataset is `data/processed/lifting_sets.csv`. It has one row per recorded set. `exercise_raw` preserves Garmin's standardized source name, while `exercise`, `movement_group`, and `equipment_type` are populated from `data/processed/exercise_mapping.csv` for canonical analysis and display.
 
 Volume is calculated as `reps * weight_lb`. Missing fields are preserved rather than inferred. In particular, warm-up sets are not inferred when `set_type` is missing.
 
@@ -84,10 +84,10 @@ The `.github/workflows/publish-dashboard.yml` workflow restores R packages from 
 
 ## Future workout flow
 
-Future ingestion is intentionally not implemented yet. Daily updates currently happen by committing normalized rows to `data/processed/lifting_sets.csv`. Conceptually, new workouts should enter like this:
+Future ingestion is intentionally not implemented yet. Daily updates currently happen by committing normalized rows to `data/processed/lifting_sets.csv` and keeping `data/processed/exercise_mapping.csv` in sync when new Garmin names appear. Conceptually, new workouts should enter like this:
 
 ```text
-local-only Garmin HTML/FIT export
+local-only Garmin Splits CSV export
         ->
 future ingestion pipeline
         ->
@@ -98,7 +98,7 @@ lifting_sets.csv
 summaries + dashboard
 ```
 
-When that ingestion layer is added, it should append normalized set-level records and let the existing project-local functions regenerate summaries and dashboard output. Raw Garmin source files should remain local unless a maintainer intentionally creates a reduced, privacy-reviewed test fixture.
+When that ingestion layer is added, it should append normalized set-level records, require any new `exercise_raw` values to be added to the mapping, and let the existing project-local functions regenerate summaries and dashboard output. Raw Garmin source files should remain local unless a maintainer intentionally creates a reduced, privacy-reviewed test fixture.
 
 ## License
 
