@@ -61,6 +61,7 @@ main <- function(args = commandArgs(trailingOnly = TRUE)) {
   report <- ingest_garmin_splits(
     paths = paths,
     lifting_sets_path = file.path(repo_root, "data", "processed", "lifting_sets.csv"),
+    workouts_path = file.path(repo_root, "data", "processed", "workouts.csv"),
     exercise_mapping_path = file.path(repo_root, "data", "processed", "exercise_mapping.csv"),
     raw_dir = file.path(repo_root, "data", "raw", "workouts"),
     write = parsed_args$write

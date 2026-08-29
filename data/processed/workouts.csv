@@ -1,0 +1,5 @@
+activity_id,day,date,date_source,workout_name
+24097428247,1,2026-08-22,inferred from saved-page relative weekday (workout3=Today on 2026-08-26),Gym w Brian
+24095842455,2,2026-08-24,inferred from saved-page relative weekday (workout3=Today on 2026-08-26),Gym
+24130689701,3,2026-08-26,inferred from saved-page relative weekday (workout3=Today on 2026-08-26),Strength
+24147071341,4,2026-08-28,raw filename,Strength

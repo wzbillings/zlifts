@@ -14,6 +14,7 @@ test_that("source_zlifts loads project-local analysis modules", {
 
   expect_true(all(c(
     "read_lifting_sets",
+    "read_workouts",
     "read_exercise_mapping",
     "apply_exercise_mapping",
     "validate_lifting_data",

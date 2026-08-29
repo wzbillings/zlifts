@@ -358,10 +358,12 @@ summarize_failed_validation <- function(validation) {
 ingest_garmin_splits <- function(paths = NULL,
                                  raw_dir = NULL,
                                  lifting_sets_path = NULL,
+                                 workouts_path = NULL,
                                  exercise_mapping = NULL,
                                  exercise_mapping_path = NULL,
                                  write = FALSE) {
   lifting_sets_path <- default_lifting_sets_path(lifting_sets_path)
+  workouts_path <- default_workouts_path(workouts_path, lifting_sets_path)
   if (is.null(exercise_mapping_path)) {
     exercise_mapping_path <- file.path(dirname(lifting_sets_path), "exercise_mapping.csv")
   }
@@ -378,6 +380,11 @@ ingest_garmin_splits <- function(paths = NULL,
   }
 
   existing_sets <- read_lifting_sets(lifting_sets_path, apply_mapping = FALSE)
+  existing_workouts <- if (file.exists(workouts_path)) {
+    read_workouts(workouts_path)
+  } else {
+    derive_workouts_from_sets(existing_sets)
+  }
   current_counts <- existing_activity_counts(existing_sets)
   current_activity_ids <- names(current_counts)
   existing_activity_ids <- current_activity_ids
@@ -461,11 +468,17 @@ ingest_garmin_splits <- function(paths = NULL,
 
   report <- dplyr::bind_rows(reports)
   new_rows <- dplyr::bind_rows(parsed_rows)
+  new_workouts <- if (nrow(new_rows) > 0) {
+    derive_workouts_from_sets(new_rows)
+  } else {
+    dplyr::slice(existing_workouts, 0)
+  }
+  combined_workouts <- dplyr::bind_rows(existing_workouts, new_workouts)
   has_failed_files <- any(report$status == "failed")
 
   if (nrow(new_rows) > 0 && !has_failed_files) {
     combined_sets <- dplyr::bind_rows(existing_sets, new_rows)
-    validation <- validate_lifting_data(combined_sets, exercise_mapping = mapping_input)
+    validation <- validate_lifting_data(combined_sets, exercise_mapping = mapping_input, workouts = combined_workouts)
     failed_validation <- validation[validation$status == "fail", , drop = FALSE]
 
     if (nrow(failed_validation) > 0) {
@@ -485,6 +498,17 @@ ingest_garmin_splits <- function(paths = NULL,
         col_names = FALSE,
         na = ""
       )
+      if (file.exists(workouts_path)) {
+        readr::write_csv(
+          new_workouts,
+          workouts_path,
+          append = TRUE,
+          col_names = FALSE,
+          na = ""
+        )
+      } else {
+        readr::write_csv(combined_workouts, workouts_path, na = "")
+      }
       report$status[parsed_report_indexes] <- "added"
       report$message[parsed_report_indexes] <- paste0("Added ", report$added_rows[parsed_report_indexes], " set row(s).")
     }

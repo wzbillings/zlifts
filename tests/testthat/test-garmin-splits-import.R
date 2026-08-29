@@ -290,6 +290,7 @@ test_that("Garmin Splits ingest report preserves actionable parse error details"
 test_that("Garmin Splits write mode appends once and skips reruns by activity id", {
   skip_if_no_seed_data()
   existing_path <- file.path(tempdir(), "lifting_sets-write.csv")
+  workouts_path <- file.path(tempdir(), "workouts-write.csv")
   write_existing_sets(existing_path)
 
   splits_path <- file.path(tempdir(), "2026-08-27-garmin-splits-999111227.csv")
@@ -309,22 +310,31 @@ test_that("Garmin Splits write mode appends once and skips reruns by activity id
   first <- ingest_garmin_splits(
     paths = splits_path,
     lifting_sets_path = existing_path,
+    workouts_path = workouts_path,
     exercise_mapping = test_import_mapping(),
     write = TRUE
   )
   second <- ingest_garmin_splits(
     paths = splits_path,
     lifting_sets_path = existing_path,
+    workouts_path = workouts_path,
     exercise_mapping = test_import_mapping(),
     write = TRUE
   )
   imported <- read_lifting_sets(existing_path, apply_mapping = FALSE)
+  workouts <- read_workouts(workouts_path)
 
   expect_equal(first$status, "added")
   expect_equal(first$added_rows, 2L)
   expect_equal(second$status, "skipped")
   expect_equal(second$skipped_rows, 2L)
   expect_equal(sum(imported$activity_id == "999111227"), 2L)
+  expect_equal(nrow(workouts), 1L)
+  expect_equal(workouts[["activity_id"]], "999111227")
+  expect_equal(workouts[["day"]], 1L)
+  expect_equal(workouts[["date"]], as.Date("2026-08-27"))
+  expect_equal(workouts[["date_source"]], "raw filename")
+  expect_equal(workouts[["workout_name"]], "Garmin Strength 2026-08-27 (999111227)")
 })
 
 
