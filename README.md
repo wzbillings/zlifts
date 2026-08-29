@@ -123,6 +123,8 @@ Rscript scripts/update-workouts.R --write data/raw/workouts/2026-08-22-garmin-sp
 
 The importer appends normalized set-level records, requires any new `exercise_raw` values to be added to the mapping, and lets the existing project-local functions regenerate summaries and dashboard output. Raw Garmin source files should remain local unless a maintainer intentionally creates a reduced, privacy-reviewed test fixture.
 
+When check mode finds an unmapped Garmin exercise name, it prints copy-ready CSV rows but does not modify `data/processed/exercise_mapping.csv`. Review each suggested row before adding it: keep the suggested `exercise_raw` exactly as Garmin exported it, replace the conservative `exercise` and `movement_group` placeholders with the appropriate canonical labels, and confirm `equipment_type`. Suggestions default to `machine`; explicit dumbbell, barbell, cable, band, and bodyweight labels are detected, but existing reviewed quirks remain authoritative. After updating the mapping manually, rerun `--check`; use `--write` only after the importer, tests, and render complete successfully.
+
 ## License
 
 This project is licensed under the GNU Affero General Public License v3.0 only (`AGPL-3.0-only`). See `LICENSE` for the full terms.

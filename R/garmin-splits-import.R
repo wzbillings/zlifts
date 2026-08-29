@@ -285,14 +285,7 @@ parse_garmin_splits_csv <- function(path,
     apply_exercise_mapping(rows, mapping_input),
     zlifts_unmapped_exercises = function(error) {
       unmapped <- unmapped_exercise_names(rows, mapping_input)
-      rlang::abort(
-        c(
-          "Unmapped Garmin exercise name.",
-          x = paste0("Add mapping row(s) to ", mapping_path_label, " for: ", paste(unmapped, collapse = ", "))
-        ),
-        class = "zlifts_unmapped_exercises",
-        parent = error
-      )
+      abort_unmapped_exercises(unmapped, mapping_path_label)
     }
   )
 

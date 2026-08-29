@@ -178,7 +178,7 @@ test_that("Garmin Splits parser fails clearly for unmapped exercises", {
       exercise_mapping_path = "data/processed/exercise_mapping.csv",
       day = 1L
     ),
-    "Add mapping row"
+    "Mystery Lift,Mystery Lift,Mystery Lift,machine,inferred,Review suggested mapping"
   )
 })
 
