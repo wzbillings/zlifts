@@ -89,7 +89,7 @@ Garmin Splits ingestion is implemented through `scripts/ingest-workouts.R`. Dail
 ```text
 local-only Garmin Splits CSV export
         ->
-scripts/ingest-workouts.R --check, then scripts/ingest-workouts.R --write
+scripts/update-workouts.R --check, then scripts/update-workouts.R --write
         ->
 canonical set-level records
         ->
@@ -105,6 +105,21 @@ YYYY-MM-DD-garmin-splits-<garmin-activity-id>.csv
 ```
 
 The leading date is the workout date. The trailing Garmin activity id is the stable activity identifier and importer dedupe key; do not rely on date alone. The Splits CSV supplies set number, exercise name, time, rest, reps, weight, and Garmin-reported volume. Splits CSV exports do not carry a workout name, so the importer sets `workout_name` to `Garmin Strength YYYY-MM-DD (<garmin-activity-id>)` until the maintainer curates `workout_name` in the processed data before commit.
+Run the daily update command from the repository root. It first invokes the existing importer, then the regression suite and dashboard render. Check mode never changes processed data; write mode prints the resulting Git status after all verification succeeds.
+
+```bash
+Rscript scripts/update-workouts.R --check
+Rscript scripts/update-workouts.R --write
+```
+
+Pass one or more explicit local CSV paths to update only those exports:
+
+```bash
+Rscript scripts/update-workouts.R --check data/raw/workouts/2026-08-22-garmin-splits-24097428247.csv
+Rscript scripts/update-workouts.R --write data/raw/workouts/2026-08-22-garmin-splits-24097428247.csv
+```
+
+
 
 The importer appends normalized set-level records, requires any new `exercise_raw` values to be added to the mapping, and lets the existing project-local functions regenerate summaries and dashboard output. Raw Garmin source files should remain local unless a maintainer intentionally creates a reduced, privacy-reviewed test fixture.
 

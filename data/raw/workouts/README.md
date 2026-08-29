@@ -22,4 +22,11 @@ Saved Garmin Connect HTML or HTM pages, FIT files, ZIP exports, and other raw wo
 
 Repository policy ignores raw files under this path and commits only this README. Do not commit raw Garmin exports here unless a maintainer intentionally creates a reduced, privacy-reviewed fixture for tests.
 
-Daily updates should parse local Splits CSV files from this directory with `Rscript scripts/ingest-workouts.R --check`, write them with `Rscript scripts/ingest-workouts.R --write`, validate the resulting canonical set rows, and leave raw source files local.
+Daily updates should use the single command wrapper from the repository root:
+
+```bash
+Rscript scripts/update-workouts.R --check
+Rscript scripts/update-workouts.R --write
+```
+
+The command runs the importer, full test suite, and dashboard render in order. In check mode it does not change processed data. In write mode it prints `git status --short` after all checks pass. Add one or more CSV paths after the mode to process only those local files. Leave raw source files local.
