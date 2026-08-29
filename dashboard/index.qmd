@@ -16,10 +16,20 @@ source_zlifts(repo_root)
 
 sets <- read_lifting_sets(file.path(repo_root, "data", "processed", "lifting_sets.csv"))
 validation <- validate_lifting_data(sets)
-exercise_summary <- summarize_exercises(sets)
-session_summary <- summarize_sessions(sets)
 session_progress <- summarize_session_progress(sets)
-exercise_progress <- summarize_exercise_progress(sets)
+
+dashboard_payload <- dashboard_filter_payload(sets)
+dashboard_json <- jsonlite::toJSON(
+  dashboard_payload,
+  dataframe = "rows",
+  auto_unbox = TRUE,
+  na = "null",
+  digits = 12
+)
+dashboard_script <- paste(
+  readLines(file.path(repo_root, "dashboard", "zlifts-filters.js"), warn = FALSE),
+  collapse = "\n"
+)
 
 metric_workouts <- session_progress$total_workouts[[1]]
 metric_sets <- session_progress$total_sets[[1]]
@@ -27,45 +37,6 @@ metric_reps <- session_progress$total_reps[[1]]
 metric_volume <- session_progress$cumulative_volume_lb[[1]]
 metric_latest <- session_progress$latest_workout_date[[1]]
 metric_latest_volume <- session_progress$latest_workout_total_volume_lb[[1]]
-
-format_lb <- function(x) {
-  dplyr::if_else(
-    is.na(x),
-    "Missing",
-    paste(scales::comma(x), "lb")
-  )
-}
-
-format_change_lb <- function(x) {
-  dplyr::case_when(
-    is.na(x) ~ "Needs repeat",
-    x > 0 ~ paste0("+", scales::comma(x), " lb"),
-    x < 0 ~ paste0(scales::comma(x), " lb"),
-    TRUE ~ "0 lb"
-  )
-}
-
-exercise_progress_table <- exercise_progress |>
-  dplyr::transmute(
-    Exercise = .data$exercise,
-    Type = format_equipment_type(.data$equipment_type),
-    Workouts = .data$workout_count,
-    `Latest recorded max` = format_lb(.data$latest_recorded_max_weight_lb),
-    `All-time recorded max` = format_lb(.data$all_time_max_weight_lb),
-    `Change from first` = format_change_lb(.data$change_from_first_recorded_max_weight_lb),
-    `Latest volume` = format_lb(.data$latest_exercise_volume_lb),
-    `Best volume` = format_lb(.data$all_time_highest_exercise_volume_lb),
-    Note = .data$progress_note
-  )
-
-session_table <- session_summary |>
-  dplyr::transmute(
-    Date = format(.data$date, "%Y-%m-%d"),
-    `Activity ID` = .data$activity_id,
-    Sets = .data$total_sets,
-    Reps = .data$total_reps,
-    `Total volume` = scales::comma(.data$total_volume_lb)
-  )
 
 validation_table <- validation |>
   dplyr::transmute(
@@ -92,12 +63,91 @@ bslib::layout_column_wrap(
 )
 ```
 
+# Explore
+
+## Filters
+
+```{r}
+htmltools::tagList(
+  htmltools::tags$script(
+    id = "zlifts-dashboard-data",
+    type = "application/json",
+    htmltools::HTML(dashboard_json)
+  ),
+  htmltools::tags$div(
+    class = "zlifts-plotly-dependency",
+    style = "position:absolute;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none;",
+    plotly::plot_ly(x = 1, y = 1, type = "scatter", mode = "markers", height = 1) |>
+      plotly::layout(showlegend = FALSE, margin = list(t = 0, r = 0, b = 0, l = 0)) |>
+      plotly::config(displayModeBar = FALSE, displaylogo = FALSE)
+  ),
+  htmltools::tags$div(
+    class = "zlifts-filter-panel",
+    htmltools::tags$div(
+      class = "zlifts-filter-grid",
+      htmltools::tags$label(
+        `for` = "date-start-filter",
+        "Start date",
+        htmltools::tags$input(id = "date-start-filter", type = "date")
+      ),
+      htmltools::tags$label(
+        `for` = "date-end-filter",
+        "End date",
+        htmltools::tags$input(id = "date-end-filter", type = "date")
+      ),
+      htmltools::tags$label(
+        `for` = "exercise-filter",
+        "Exercise",
+        htmltools::tags$select(
+          id = "exercise-filter",
+          multiple = "multiple",
+          size = "7",
+          class = "zlifts-filter-select"
+        )
+      ),
+      htmltools::tags$label(
+        `for` = "movement-filter",
+        "Movement group",
+        htmltools::tags$select(
+          id = "movement-filter",
+          multiple = "multiple",
+          size = "7",
+          class = "zlifts-filter-select"
+        )
+      ),
+      htmltools::tags$label(
+        `for` = "equipment-filter",
+        "Equipment",
+        htmltools::tags$select(
+          id = "equipment-filter",
+          multiple = "multiple",
+          size = "7",
+          class = "zlifts-filter-select"
+        )
+      )
+    ),
+    htmltools::tags$div(
+      class = "zlifts-filter-actions",
+      htmltools::tags$button(id = "reset-filters", type = "button", class = "zlifts-reset-button", "Reset filters"),
+      htmltools::tags$span(id = "filter-status", class = "zlifts-filter-status", `aria-live` = "polite")
+    )
+  ),
+  htmltools::tags$script(htmltools::HTML(dashboard_script))
+)
+```
+
+# Workout Volume
+
 ## Total Workout Volume
 
 ```{r}
-#| fig-width: 8
-#| fig-height: 5
-interactive_lifting_plot(plot_session_volume(session_summary))
+htmltools::div(
+  id = "session-volume-chart",
+  class = "zlifts-chart",
+  style = "min-height:400px;",
+  role = "img",
+  `aria-label` = "Filtered total workout volume chart"
+)
 ```
 
 # Progress Highlights
@@ -105,10 +155,10 @@ interactive_lifting_plot(plot_session_volume(session_summary))
 ## Recorded Load Highlights
 
 ```{r}
-knitr::kable(
-  exercise_progress_table,
-  align = c("l", "l", "r", "r", "r", "r", "r", "r", "l"),
-  caption = "Recorded exercise progress from the canonical set-level data. Garmin source names remain preserved in exercise_raw, and equipment variants remain explicit."
+htmltools::div(
+  id = "exercise-progress-table",
+  class = "zlifts-table-wrap",
+  `aria-label` = "Filtered recorded exercise progress table"
 )
 ```
 
@@ -117,17 +167,25 @@ knitr::kable(
 ## Total Volume By Exercise
 
 ```{r}
-#| fig-width: 13
-#| fig-height: 12
-interactive_lifting_plot(plot_exercise_volume(exercise_summary))
+htmltools::div(
+  id = "exercise-volume-chart",
+  class = "zlifts-chart zlifts-chart-large",
+  style = "min-height:520px;",
+  role = "img",
+  `aria-label` = "Filtered exercise volume chart"
+)
 ```
 
 ## Maximum Weight By Exercise
 
 ```{r}
-#| fig-width: 13
-#| fig-height: 12
-interactive_lifting_plot(plot_exercise_max_weight(exercise_summary))
+htmltools::div(
+  id = "max-weight-chart",
+  class = "zlifts-chart zlifts-chart-large",
+  style = "min-height:520px;",
+  role = "img",
+  `aria-label` = "Filtered maximum weight chart"
+)
 ```
 
 # Set Performance
@@ -135,9 +193,13 @@ interactive_lifting_plot(plot_exercise_max_weight(exercise_summary))
 ## Set-Level Load And Reps
 
 ```{r}
-#| fig-width: 13
-#| fig-height: 12
-interactive_lifting_plot(plot_set_performance(sets))
+htmltools::div(
+  id = "set-performance-chart",
+  class = "zlifts-chart zlifts-chart-large",
+  style = "min-height:560px;",
+  role = "img",
+  `aria-label` = "Filtered set-level load and repetitions chart"
+)
 ```
 
 # Data / QA
@@ -145,10 +207,10 @@ interactive_lifting_plot(plot_set_performance(sets))
 ## Workout-Level Summaries
 
 ```{r}
-knitr::kable(
-  session_table,
-  align = c("l", "l", "r", "r", "r"),
-  caption = "Workout summaries recalculated from the canonical set-level data."
+htmltools::div(
+  id = "session-summary-table",
+  class = "zlifts-table-wrap",
+  `aria-label` = "Filtered workout summaries table"
 )
 ```
 
@@ -158,7 +220,6 @@ knitr::kable(
 knitr::kable(
   validation_table,
   align = c("l", "l", "l", "r"),
-  caption = "Lightweight QA checks run against data/processed/lifting_sets.csv."
+  caption = "Lightweight QA checks run against data/processed/lifting_sets.csv and data/processed/workouts.csv."
 )
 ```
-

@@ -58,7 +58,7 @@ The renv lockfile records R packages used by the analysis code, tests, and dashb
 Rscript tests/testthat.R
 ```
 
-The regression tests assert that the seed dataset has 75 set records, three activities, and the validated chronological session totals:
+The regression tests assert that the seed dataset has 105 set records, four activities, and the validated chronological session totals:
 
 ```text
 sets:   23, 26, 26
@@ -76,7 +76,7 @@ quarto render dashboard
 
 Open the rendered dashboard at `dashboard/_site/index.html`, or use the published GitHub Pages site after the workflow runs.
 
-The dashboard has five sections: Overview, Progress Highlights, Exercise Progress, Set Performance, and Data / QA. It loads `data/processed/lifting_sets.csv`, runs project-local R functions, and renders interactive figures directly from the data.
+The dashboard keeps all-data value boxes in Overview, then embeds the committed processed set data for static client-side filtering. Date, exercise, movement group, and equipment filters update the workout volume chart, exercise progress charts, set-level chart, progress table, and session summary table without adding Shiny or a server runtime. Data / QA still shows validation checks from `data/processed/lifting_sets.csv` and `data/processed/workouts.csv`.
 
 ## Publish to GitHub Pages
 
