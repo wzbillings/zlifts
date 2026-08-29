@@ -136,21 +136,16 @@ htmltools::tagList(
 )
 ```
 
-# Workout Volume
-
 ## Total Workout Volume
 
 ```{r}
 htmltools::div(
   id = "session-volume-chart",
   class = "zlifts-chart",
-  style = "min-height:400px;",
   role = "img",
   `aria-label` = "Filtered total workout volume chart"
 )
 ```
-
-# Progress Highlights
 
 ## Recorded Load Highlights
 
@@ -162,15 +157,12 @@ htmltools::div(
 )
 ```
 
-# Exercise Progress
-
 ## Total Volume By Exercise
 
 ```{r}
 htmltools::div(
   id = "exercise-volume-chart",
   class = "zlifts-chart zlifts-chart-large",
-  style = "min-height:520px;",
   role = "img",
   `aria-label` = "Filtered exercise volume chart"
 )
@@ -182,13 +174,10 @@ htmltools::div(
 htmltools::div(
   id = "max-weight-chart",
   class = "zlifts-chart zlifts-chart-large",
-  style = "min-height:520px;",
   role = "img",
   `aria-label` = "Filtered maximum weight chart"
 )
 ```
-
-# Set Performance
 
 ## Set-Level Load And Reps
 
@@ -196,13 +185,10 @@ htmltools::div(
 htmltools::div(
   id = "set-performance-chart",
   class = "zlifts-chart zlifts-chart-large",
-  style = "min-height:560px;",
   role = "img",
   `aria-label` = "Filtered set-level load and repetitions chart"
 )
 ```
-
-# Data / QA
 
 ## Workout-Level Summaries
 
@@ -213,6 +199,8 @@ htmltools::div(
   `aria-label` = "Filtered workout summaries table"
 )
 ```
+
+# Data / QA
 
 ## Validation Checks
 

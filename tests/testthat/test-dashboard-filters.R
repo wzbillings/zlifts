@@ -33,4 +33,9 @@ test_that("dashboard source defines static linked filter targets", {
   expect_true(grepl("exercise-progress-table", source, fixed = TRUE))
   expect_true(grepl("session-summary-table", source, fixed = TRUE))
 })
+test_that("dashboard filter script resizes charts after dashboard navigation", {
+  script <- paste(readLines(file.path(find_project_root(), "dashboard", "zlifts-filters.js"), warn = FALSE), collapse = "\n")
 
+  expect_true(grepl("Plotly.Plots.resize", script, fixed = TRUE))
+  expect_true(grepl("ResizeObserver", script, fixed = TRUE))
+})

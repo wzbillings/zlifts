@@ -14,6 +14,13 @@
     "#4d7c0f"
   ];
 
+  var chartIds = [
+    "session-volume-chart",
+    "exercise-volume-chart",
+    "max-weight-chart",
+    "set-performance-chart"
+  ];
+
   var tableSort = {};
   var state = {
     rows: [],
@@ -410,6 +417,23 @@
     return { displaylogo: false, responsive: true };
   }
 
+  function resizeCharts() {
+    if (!window.Plotly || !window.Plotly.Plots) {
+      return;
+    }
+    chartIds.forEach(function (id) {
+      var element = byId(id);
+      if (element && element.offsetWidth > 0) {
+        window.Plotly.Plots.resize(element);
+      }
+    });
+  }
+
+  function scheduleResize() {
+    window.setTimeout(resizeCharts, 100);
+    window.setTimeout(resizeCharts, 350);
+  }
+
   function renderEmptyChart(id, title) {
     if (window.Plotly) {
       window.Plotly.react(id, [], emptyLayout(title), plotlyConfig());
@@ -654,6 +678,8 @@
       { key: "total_volume_lb", label: "Total volume", align: "right", format: formatLb },
       { key: "exercises", label: "Exercises", align: "right", format: formatInteger }
     ], "No workouts match the current filters.");
+
+    scheduleResize();
   }
 
   function handleFilterChange() {
@@ -723,6 +749,28 @@
     var reset = byId("reset-filters");
     if (reset) {
       reset.addEventListener("click", resetFilters);
+    }
+
+    window.addEventListener("resize", scheduleResize);
+    document.addEventListener("shown.bs.tab", scheduleResize, true);
+    document.addEventListener("click", function (event) {
+      if (event.target && event.target.closest && event.target.closest("a, button")) {
+        scheduleResize();
+      }
+    }, true);
+
+    if (window.ResizeObserver) {
+      var observer = new ResizeObserver(function (entries) {
+        if (entries.some(function (entry) { return entry.contentRect.width > 0; })) {
+          scheduleResize();
+        }
+      });
+      chartIds.forEach(function (id) {
+        var element = byId(id);
+        if (element) {
+          observer.observe(element);
+        }
+      });
     }
 
     renderDashboard();
