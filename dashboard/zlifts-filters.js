@@ -25,7 +25,8 @@
   var state = {
     rows: [],
     minDate: "",
-    maxDate: ""
+    maxDate: "",
+    latestWorkoutDate: ""
   };
 
   function byId(id) {
@@ -569,7 +570,7 @@
     return String(aValue || "").localeCompare(String(bValue || ""), undefined, { sensitivity: "base" });
   }
 
-  function renderTable(id, rows, columns, emptyMessage) {
+  function renderTable(id, rows, columns, emptyMessage, defaultSort) {
     var container = byId(id);
     if (!container) {
       return;
@@ -584,7 +585,8 @@
       return;
     }
 
-    var sortState = tableSort[id] || { key: columns[0].key, direction: "asc" };
+    var defaultSortState = defaultSort || { key: columns[0].key, direction: "asc" };
+    var sortState = tableSort[id] || defaultSortState;
     var sortedRows = rows.slice().sort(function (a, b) {
       var comparison = compareRows(a, b, sortState.key);
       return sortState.direction === "asc" ? comparison : -comparison;
@@ -664,6 +666,7 @@
     renderExerciseVolumeChart(exerciseSummaries);
     renderMaxWeightChart(exerciseSummaries);
     renderSetPerformanceChart(rows);
+    renderWorkoutDetail();
 
     renderTable("exercise-progress-table", progress, [
       { key: "exercise", label: "Exercise" },
@@ -738,6 +741,87 @@
     }
   }
 
+  function workoutDates() {
+    return uniqueValues(state.rows, "date").sort(function (a, b) {
+      return b.localeCompare(a);
+    });
+  }
+
+  function initializeWorkoutDetailDates() {
+    var dates = workoutDates();
+    state.latestWorkoutDate = dates[0] || "";
+    var select = byId("workout-date-filter");
+    if (!select) {
+      return;
+    }
+
+    select.textContent = "";
+    dates.forEach(function (date) {
+      var option = document.createElement("option");
+      option.value = date;
+      option.textContent = date;
+      option.selected = date === state.latestWorkoutDate;
+      select.appendChild(option);
+    });
+
+    if (state.latestWorkoutDate) {
+      select.value = state.latestWorkoutDate;
+    }
+    resetWorkoutDetailSort();
+  }
+
+  function selectedWorkoutDate() {
+    var select = byId("workout-date-filter");
+    if (select && select.value) {
+      return select.value;
+    }
+    return state.latestWorkoutDate;
+  }
+
+  function compareWorkoutDetailRows(a, b) {
+    return a.date.localeCompare(b.date) ||
+      a.activity_id.localeCompare(b.activity_id) ||
+      compareRows(a, b, "set_number") ||
+      a.exercise_label.localeCompare(b.exercise_label);
+  }
+
+  function workoutDetailRows() {
+    var date = selectedWorkoutDate();
+    if (!date) {
+      return [];
+    }
+
+    return state.rows.filter(function (row) {
+      return row.date === date;
+    }).sort(compareWorkoutDetailRows).map(function (row, index) {
+      var detailRow = Object.assign({}, row);
+      detailRow.workout_order = index;
+      return detailRow;
+    });
+  }
+
+  function resetWorkoutDetailSort() {
+    tableSort["workout-detail-table"] = { key: "workout_order", direction: "asc" };
+  }
+
+  function handleWorkoutDateChange() {
+    resetWorkoutDetailSort();
+    renderWorkoutDetail();
+  }
+
+  function renderWorkoutDetail() {
+    renderTable("workout-detail-table", workoutDetailRows(), [
+      { key: "date", label: "Date" },
+      { key: "workout_name", label: "Workout" },
+      { key: "exercise_label", label: "Exercise" },
+      { key: "set_number", label: "Set", align: "right", format: formatInteger },
+      { key: "reps", label: "Reps", align: "right", format: formatInteger },
+      { key: "weight_lb", label: "Weight", align: "right", format: formatLb },
+      { key: "volume_lb", label: "Volume", align: "right", format: formatLb }
+    ], "No sets are logged for the selected workout date.", { key: "workout_order", direction: "asc" });
+  }
+
+
   function initializeDashboard() {
     var payload = readPayload();
     state.rows = (payload.rows || []).map(normalizeRow).filter(function (row) {
@@ -745,6 +829,7 @@
     });
 
     initializeDates();
+    initializeWorkoutDetailDates();
     refreshLinkedFilters();
 
     ["date-start-filter", "date-end-filter", "exercise-filter", "movement-filter", "equipment-filter"].forEach(function (id) {
@@ -753,6 +838,11 @@
         element.addEventListener("change", handleFilterChange);
       }
     });
+
+    var workoutDate = byId("workout-date-filter");
+    if (workoutDate) {
+      workoutDate.addEventListener("change", handleWorkoutDateChange);
+    }
 
     var reset = byId("reset-filters");
     if (reset) {

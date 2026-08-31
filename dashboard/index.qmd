@@ -200,6 +200,32 @@ htmltools::div(
 )
 ```
 
+# Workout Detail
+
+## Workout Selector
+
+```{r}
+htmltools::tags$div(
+  class = "zlifts-workout-detail-panel",
+  htmltools::tags$label(
+    class = "zlifts-workout-date-control",
+    `for` = "workout-date-filter",
+    "Workout date",
+    htmltools::tags$select(id = "workout-date-filter")
+  )
+)
+```
+
+## Logged Sets
+
+```{r}
+htmltools::div(
+  id = "workout-detail-table",
+  class = "zlifts-table-wrap",
+  `aria-label` = "Selected workout set details table"
+)
+```
+
 # Data / QA
 
 ## Validation Checks
