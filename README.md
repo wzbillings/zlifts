@@ -33,6 +33,7 @@ zlifts/
 |   `-- processed/
 |-- dashboard/
 |-- tests/
+|   |-- fixtures/
 |   `-- testthat/
 |-- tools/
 |-- archive/
@@ -58,13 +59,13 @@ The renv lockfile records R packages used by the analysis code, tests, and dashb
 Rscript tests/testthat.R
 ```
 
-The regression tests assert that the seed dataset has 129 set records, five activities, and the validated chronological session totals:
-
-```text
-sets:   23, 26, 26
-reps:   336, 348, 380
-volume: 18,805 lb; 25,665 lb; 33,325 lb
-```
+The test suite separates exact regression checks from live data quality checks.
+Fixture tests read `tests/fixtures/processed/` and assert stable summary,
+progress, and importer behavior. Live processed-data tests read
+`data/processed/lifting_sets.csv` and `data/processed/workouts.csv`, but only
+assert invariants such as required columns, populated and unique activity IDs,
+workout/set alignment, calculated volume, and validation status. Daily ingests
+can add rows, activities, dates, and volume without changing test expectations.
 
 ## Render the dashboard
 

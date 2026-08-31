@@ -1,0 +1,4 @@
+activity_id,day,date,date_source,workout_name
+1001,1,2026-01-01,fixture,Fixture Strength A
+1002,2,2026-01-03,fixture,Fixture Strength B
+1003,3,2026-01-05,fixture,Fixture Strength C

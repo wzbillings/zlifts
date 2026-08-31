@@ -25,8 +25,14 @@ test_that("source_zlifts loads project-local analysis modules", {
     "plot_session_volume"
   ) %in% ls(analysis_env)))
 
-  sets <- analysis_env$read_lifting_sets(file.path(repo_root, "data", "processed", "lifting_sets.csv"))
+  sets <- analysis_env$read_lifting_sets(
+    file.path(repo_root, "data", "processed", "lifting_sets.csv"),
+    apply_mapping = FALSE
+  )
+  blank_activity <- is.na(sets$activity_id) | trimws(as.character(sets$activity_id)) == ""
 
   expect_s3_class(sets, "tbl_df")
-  expect_equal(nrow(sets), 129)
+  expect_true(nrow(sets) > 0)
+  expect_true(all(analysis_env$canonical_lifting_set_columns() %in% names(sets)))
+  expect_false(any(blank_activity))
 })
