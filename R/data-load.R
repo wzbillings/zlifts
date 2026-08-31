@@ -60,10 +60,12 @@ read_lifting_sets <- function(path = file.path("data", "processed", "lifting_set
     exercise_mapping <- file.path(dirname(path), "exercise_mapping.csv")
   }
   attr(sets, "exercise_mapping_path") <- exercise_mapping
+  attr(sets, "workouts_path") <- default_workouts_path(lifting_sets_path = path)
 
   if (apply_mapping) {
     sets <- apply_exercise_mapping(sets, exercise_mapping)
     attr(sets, "exercise_mapping_path") <- exercise_mapping
+    attr(sets, "workouts_path") <- default_workouts_path(lifting_sets_path = path)
   }
 
   sets

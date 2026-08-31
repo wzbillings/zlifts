@@ -30,10 +30,12 @@ source_zlifts <- function(repo_root = find_project_root(), envir = parent.frame(
   analysis_files <- file.path(repo_root, c(
     "R/utils.R",
     "R/exercise-mapping.R",
+    "R/workouts.R",
     "R/data-load.R",
     "R/data-validation.R",
     "R/garmin-splits-import.R",
     "R/data-summary.R",
+    "R/dashboard-data.R",
     "R/plot-utils.R",
     "R/plot-session.R",
     "R/plot-volume.R",

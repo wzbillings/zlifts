@@ -5,6 +5,7 @@ project:
 format:
   dashboard:
     theme: cosmo
+    css: styles.css
     orientation: rows
 
 execute:

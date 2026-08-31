@@ -8,10 +8,72 @@
 #' @param tolerance Numeric tolerance used when comparing calculated volumes.
 #' @param exercise_mapping Optional mapping tibble or path used to verify
 #'   exercise, movement_group, and equipment_type fields.
+#' @param workouts Optional workout metadata tibble or path used to verify that
+#'   duplicated set-level workout fields match data/processed/workouts.csv.
 #'
 #' @return A tibble with columns `check`, `status`, `message`, and `n`, with
 #'   class `zlifts_validation`.
-validate_lifting_data <- function(sets, tolerance = 1e-8, exercise_mapping = NULL) {
+resolve_validation_workouts <- function(sets, workouts = NULL) {
+  if (!is.null(workouts)) {
+    return(resolve_workouts(workouts))
+  }
+
+  workouts_path <- attr(sets, "workouts_path", exact = TRUE)
+  if (is.character(workouts_path) && length(workouts_path) == 1L && file.exists(workouts_path)) {
+    return(read_workouts(workouts_path))
+  }
+
+  NULL
+}
+
+same_workout_value <- function(x, y) {
+  x <- as.character(x)
+  y <- as.character(y)
+  (is.na(x) & is.na(y)) | (!is.na(x) & !is.na(y) & x == y)
+}
+
+workout_metadata_consistency <- function(sets, workouts) {
+  set_workouts <- derive_workouts_from_sets(sets)
+  workouts <- resolve_workouts(workouts)
+
+  duplicate_set_metadata <- set_workouts |>
+    dplyr::count(.data$activity_id, name = "n") |>
+    dplyr::filter(.data$n > 1)
+  duplicate_workout_metadata <- workouts |>
+    dplyr::count(.data$activity_id, name = "n") |>
+    dplyr::filter(.data$n > 1)
+
+  joined <- dplyr::full_join(
+    set_workouts,
+    workouts,
+    by = "activity_id",
+    suffix = c("_sets", "_workouts")
+  )
+
+  missing_from_sets <- is.na(joined$day_sets) & is.na(joined$date_sets) & is.na(joined$workout_name_sets)
+  missing_from_workouts <- is.na(joined$day_workouts) & is.na(joined$date_workouts) & is.na(joined$workout_name_workouts)
+  field_mismatch <- !missing_from_sets & !missing_from_workouts & (
+    !same_workout_value(joined$day_sets, joined$day_workouts) |
+      !same_workout_value(joined$date_sets, joined$date_workouts) |
+      !same_workout_value(joined$date_source_sets, joined$date_source_workouts) |
+      !same_workout_value(joined$workout_name_sets, joined$workout_name_workouts)
+  )
+
+  failures <- nrow(duplicate_set_metadata) +
+    nrow(duplicate_workout_metadata) +
+    sum(missing_from_sets | missing_from_workouts | field_mismatch, na.rm = TRUE)
+
+  list(
+    failures = failures,
+    message = if (failures > 0) {
+      "Workout metadata does not match set rows."
+    } else {
+      "Workout metadata matches set rows."
+    }
+  )
+}
+
+validate_lifting_data <- function(sets, tolerance = 1e-8, exercise_mapping = NULL, workouts = NULL) {
   check_required_columns(sets)
   volume_matches_garmin <- parse_logical_text(sets$volume_matches_garmin)
 
@@ -65,6 +127,23 @@ validate_lifting_data <- function(sets, tolerance = 1e-8, exercise_mapping = NUL
     TRUE ~ "Exercise names are covered by the exercise mapping."
   )
 
+  workout_metadata <- resolve_validation_workouts(sets, workouts)
+  workout_metadata_check <- if (is.null(workout_metadata)) {
+    NULL
+  } else {
+    workout_metadata_consistency(sets, workout_metadata)
+  }
+  workout_metadata_row <- if (is.null(workout_metadata_check)) {
+    NULL
+  } else {
+    check_row(
+      "workout_metadata_matches_sets",
+      if (workout_metadata_check$failures > 0) "fail" else "pass",
+      workout_metadata_check$message,
+      workout_metadata_check$failures
+    )
+  }
+
   results <- dplyr::bind_rows(
     check_row("required_columns", "pass", "All required columns are present.", 0L),
     check_row(
@@ -115,6 +194,7 @@ validate_lifting_data <- function(sets, tolerance = 1e-8, exercise_mapping = NUL
       exercise_mapping_message,
       exercise_mapping_failures
     ),
+    workout_metadata_row,
     check_row(
       "no_exact_duplicate_records",
       if (any(exact_duplicate_records)) "fail" else "pass",

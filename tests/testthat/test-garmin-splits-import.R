@@ -178,7 +178,7 @@ test_that("Garmin Splits parser fails clearly for unmapped exercises", {
       exercise_mapping_path = "data/processed/exercise_mapping.csv",
       day = 1L
     ),
-    "Add mapping row"
+    "Mystery Lift,Mystery Lift,Mystery Lift,machine,inferred,Review suggested mapping"
   )
 })
 
@@ -290,6 +290,7 @@ test_that("Garmin Splits ingest report preserves actionable parse error details"
 test_that("Garmin Splits write mode appends once and skips reruns by activity id", {
   skip_if_no_seed_data()
   existing_path <- file.path(tempdir(), "lifting_sets-write.csv")
+  workouts_path <- file.path(tempdir(), "workouts-write.csv")
   write_existing_sets(existing_path)
 
   splits_path <- file.path(tempdir(), "2026-08-27-garmin-splits-999111227.csv")
@@ -309,22 +310,31 @@ test_that("Garmin Splits write mode appends once and skips reruns by activity id
   first <- ingest_garmin_splits(
     paths = splits_path,
     lifting_sets_path = existing_path,
+    workouts_path = workouts_path,
     exercise_mapping = test_import_mapping(),
     write = TRUE
   )
   second <- ingest_garmin_splits(
     paths = splits_path,
     lifting_sets_path = existing_path,
+    workouts_path = workouts_path,
     exercise_mapping = test_import_mapping(),
     write = TRUE
   )
   imported <- read_lifting_sets(existing_path, apply_mapping = FALSE)
+  workouts <- read_workouts(workouts_path)
 
   expect_equal(first$status, "added")
   expect_equal(first$added_rows, 2L)
   expect_equal(second$status, "skipped")
   expect_equal(second$skipped_rows, 2L)
   expect_equal(sum(imported$activity_id == "999111227"), 2L)
+  expect_equal(nrow(workouts), 1L)
+  expect_equal(workouts[["activity_id"]], "999111227")
+  expect_equal(workouts[["day"]], 1L)
+  expect_equal(workouts[["date"]], as.Date("2026-08-27"))
+  expect_equal(workouts[["date_source"]], "raw filename")
+  expect_equal(workouts[["workout_name"]], "Garmin Strength 2026-08-27 (999111227)")
 })
 
 
@@ -393,4 +403,39 @@ test_that("Garmin Splits importer skips existing activity ids without overwritin
   expect_equal(nrow(imported), 1L)
   expect_equal(imported$workout_name, "Existing 999111228")
   expect_equal(imported$exercise_raw, "Chest Press with Band")
+})
+test_that("Garmin Splits write mode does not leave partial set appends when workout write fails", {
+  skip_if_no_seed_data()
+  existing_path <- file.path(tempdir(), "lifting_sets-atomic-write.csv")
+  write_existing_sets(existing_path)
+  bad_workouts_dir <- file.path(tempdir(), paste0("missing-workouts-dir-", Sys.getpid(), "-", as.integer(Sys.time())))
+  bad_workouts_path <- file.path(bad_workouts_dir, "workouts.csv")
+
+  splits_path <- file.path(tempdir(), "2026-08-27-garmin-splits-999111231.csv")
+  write_splits_csv(
+    splits_path,
+    list(
+      Set = 1L,
+      "Exercise Name" = "Chest Press with Band",
+      Time = "0:30",
+      Rest = "1:00",
+      Reps = 10L,
+      Weight = 50,
+      Volume = 500
+    )
+  )
+
+  before <- readLines(existing_path, warn = FALSE)
+  expect_error(
+    ingest_garmin_splits(
+      paths = splits_path,
+      lifting_sets_path = existing_path,
+      workouts_path = bad_workouts_path,
+      exercise_mapping = test_import_mapping(),
+      write = TRUE
+    )
+  )
+  after <- readLines(existing_path, warn = FALSE)
+
+  expect_equal(after, before)
 })

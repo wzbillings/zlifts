@@ -285,14 +285,7 @@ parse_garmin_splits_csv <- function(path,
     apply_exercise_mapping(rows, mapping_input),
     zlifts_unmapped_exercises = function(error) {
       unmapped <- unmapped_exercise_names(rows, mapping_input)
-      rlang::abort(
-        c(
-          "Unmapped Garmin exercise name.",
-          x = paste0("Add mapping row(s) to ", mapping_path_label, " for: ", paste(unmapped, collapse = ", "))
-        ),
-        class = "zlifts_unmapped_exercises",
-        parent = error
-      )
+      abort_unmapped_exercises(unmapped, mapping_path_label)
     }
   )
 
@@ -362,13 +355,102 @@ summarize_failed_validation <- function(validation) {
   paste(failures$message, collapse = "; ")
 }
 
+write_processed_csv_temp <- function(data, target_path) {
+  parent_dir <- dirname(target_path)
+  if (!dir.exists(parent_dir)) {
+    rlang::abort(
+      c(
+        "Cannot write processed data table.",
+        x = paste("Parent directory does not exist:", parent_dir)
+      ),
+      class = "zlifts_processed_write_failed"
+    )
+  }
+
+  temp_path <- tempfile(pattern = paste0(basename(target_path), "-"), tmpdir = parent_dir, fileext = ".tmp")
+  readr::write_csv(data, temp_path, na = "")
+  temp_path
+}
+
+copy_file_or_abort <- function(from, to) {
+  if (!file.copy(from, to, overwrite = TRUE)) {
+    rlang::abort(
+      c(
+        "Cannot replace processed data table.",
+        x = paste("Could not replace", to)
+      ),
+      class = "zlifts_processed_write_failed"
+    )
+  }
+  invisible(to)
+}
+
+write_processed_tables <- function(sets, lifting_sets_path, workouts, workouts_path) {
+  targets <- c(lifting_sets_path, workouts_path)
+  temp_paths <- character()
+  backup_paths <- rep(NA_character_, length(targets))
+  replaced_targets <- character()
+
+  cleanup_paths <- function() {
+    unlink(temp_paths[file.exists(temp_paths)], force = TRUE)
+    unlink(backup_paths[!is.na(backup_paths) & file.exists(backup_paths)], force = TRUE)
+  }
+  on.exit(cleanup_paths(), add = TRUE)
+
+  temp_paths <- c(
+    write_processed_csv_temp(sets, lifting_sets_path),
+    write_processed_csv_temp(workouts, workouts_path)
+  )
+
+  for (index in seq_along(targets)) {
+    if (file.exists(targets[[index]])) {
+      backup_paths[[index]] <- tempfile(
+        pattern = paste0(basename(targets[[index]]), "-backup-"),
+        tmpdir = dirname(targets[[index]]),
+        fileext = ".tmp"
+      )
+      copy_file_or_abort(targets[[index]], backup_paths[[index]])
+    }
+  }
+
+  tryCatch(
+    {
+      for (index in seq_along(targets)) {
+        copy_file_or_abort(temp_paths[[index]], targets[[index]])
+        replaced_targets <- c(replaced_targets, targets[[index]])
+      }
+    },
+    error = function(error) {
+      for (target in rev(replaced_targets)) {
+        index <- match(target, targets)
+        if (!is.na(backup_paths[[index]]) && file.exists(backup_paths[[index]])) {
+          file.copy(backup_paths[[index]], target, overwrite = TRUE)
+        } else if (file.exists(target)) {
+          unlink(target, force = TRUE)
+        }
+      }
+      rlang::abort(
+        c(
+          "Could not write processed workout data tables.",
+          x = conditionMessage(error)
+        ),
+        class = "zlifts_processed_write_failed",
+        parent = error
+      )
+    }
+  )
+
+  invisible(NULL)
+}
 ingest_garmin_splits <- function(paths = NULL,
                                  raw_dir = NULL,
                                  lifting_sets_path = NULL,
+                                 workouts_path = NULL,
                                  exercise_mapping = NULL,
                                  exercise_mapping_path = NULL,
                                  write = FALSE) {
   lifting_sets_path <- default_lifting_sets_path(lifting_sets_path)
+  workouts_path <- default_workouts_path(workouts_path, lifting_sets_path)
   if (is.null(exercise_mapping_path)) {
     exercise_mapping_path <- file.path(dirname(lifting_sets_path), "exercise_mapping.csv")
   }
@@ -385,6 +467,11 @@ ingest_garmin_splits <- function(paths = NULL,
   }
 
   existing_sets <- read_lifting_sets(lifting_sets_path, apply_mapping = FALSE)
+  existing_workouts <- if (file.exists(workouts_path)) {
+    read_workouts(workouts_path)
+  } else {
+    derive_workouts_from_sets(existing_sets)
+  }
   current_counts <- existing_activity_counts(existing_sets)
   current_activity_ids <- names(current_counts)
   existing_activity_ids <- current_activity_ids
@@ -468,11 +555,17 @@ ingest_garmin_splits <- function(paths = NULL,
 
   report <- dplyr::bind_rows(reports)
   new_rows <- dplyr::bind_rows(parsed_rows)
+  new_workouts <- if (nrow(new_rows) > 0) {
+    derive_workouts_from_sets(new_rows)
+  } else {
+    dplyr::slice(existing_workouts, 0)
+  }
+  combined_workouts <- dplyr::bind_rows(existing_workouts, new_workouts)
   has_failed_files <- any(report$status == "failed")
 
   if (nrow(new_rows) > 0 && !has_failed_files) {
     combined_sets <- dplyr::bind_rows(existing_sets, new_rows)
-    validation <- validate_lifting_data(combined_sets, exercise_mapping = mapping_input)
+    validation <- validate_lifting_data(combined_sets, exercise_mapping = mapping_input, workouts = combined_workouts)
     failed_validation <- validation[validation$status == "fail", , drop = FALSE]
 
     if (nrow(failed_validation) > 0) {
@@ -485,13 +578,7 @@ ingest_garmin_splits <- function(paths = NULL,
       report$failed_rows[parsed_report_indexes] <- report$added_rows[parsed_report_indexes]
       report$added_rows[parsed_report_indexes] <- 0L
     } else if (isTRUE(write)) {
-      readr::write_csv(
-        new_rows,
-        lifting_sets_path,
-        append = TRUE,
-        col_names = FALSE,
-        na = ""
-      )
+      write_processed_tables(combined_sets, lifting_sets_path, combined_workouts, workouts_path)
       report$status[parsed_report_indexes] <- "added"
       report$message[parsed_report_indexes] <- paste0("Added ", report$added_rows[parsed_report_indexes], " set row(s).")
     }

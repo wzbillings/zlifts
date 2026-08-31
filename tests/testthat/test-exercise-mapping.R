@@ -53,6 +53,37 @@ test_that("exercise mapping is applied and unmapped names fail clearly", {
   expect_equal(mapped[["exercise_raw"]], "Chest Press with Band")
 })
 
+test_mapping_for_suggestions <- function() {
+  tibble::tibble(
+    exercise_raw = "Chest Press with Band",
+    exercise = "Chest Press",
+    movement_group = "Chest Press",
+    equipment_type = "machine",
+    review_status = "reviewed",
+    notes = NA_character_
+  )
+}
+
+test_that("unmapped machine-like exercises include conservative copy-ready mapping rows", {
+  mapping <- test_mapping_for_suggestions()
+  sets <- tibble::tibble(exercise_raw = "Selectorized Pec Fly")
+
+  expect_error(
+    apply_exercise_mapping(sets, mapping),
+    "Selectorized Pec Fly,Selectorized Pec Fly,Selectorized Pec Fly,machine,inferred,Review suggested mapping"
+  )
+})
+
+test_that("unmapped dumbbell exercises include dumbbell copy-ready mapping rows", {
+  mapping <- test_mapping_for_suggestions()
+  sets <- tibble::tibble(exercise_raw = "Dumbbell Lateral Raise")
+
+  expect_error(
+    apply_exercise_mapping(sets, mapping),
+    "Dumbbell Lateral Raise,Dumbbell Lateral Raise,Dumbbell Lateral Raise,dumbbell,inferred,Review suggested mapping"
+  )
+})
+
 test_that("seed lifting dataset uses canonical exercise names and equipment types", {
   skip_if_no_seed_data()
 
