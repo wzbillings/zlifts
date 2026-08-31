@@ -6,10 +6,10 @@ test_that("session progress metrics are calculated from set data", {
 
   expect_s3_class(progress, "tbl_df")
   expect_equal(nrow(progress), 1)
-  expect_equal(progress$total_workouts, 4L)
-  expect_equal(progress$latest_workout_date, as.Date("2026-08-28"))
-  expect_equal(progress$latest_workout_total_volume_lb, 37920)
-  expect_equal(progress$cumulative_volume_lb, 115715)
+  expect_equal(progress$total_workouts, 5L)
+  expect_equal(progress$latest_workout_date, as.Date("2026-08-31"))
+  expect_equal(progress$latest_workout_total_volume_lb, 37800)
+  expect_equal(progress$cumulative_volume_lb, 153515)
 })
 
 test_that("exercise progress uses canonical names and repeated-observation status", {
@@ -31,14 +31,14 @@ test_that("exercise progress uses canonical names and repeated-observation statu
     dplyr::filter(.data$exercise == "Seated Leg Press", .data$equipment_type == "machine")
 
   expect_equal(nrow(leg_press), 1)
-  expect_equal(leg_press$workout_count, 4L)
+  expect_equal(leg_press$workout_count, 5L)
   expect_equal(leg_press$first_workout_date, as.Date("2026-08-22"))
-  expect_equal(leg_press$latest_workout_date, as.Date("2026-08-28"))
+  expect_equal(leg_press$latest_workout_date, as.Date("2026-08-31"))
   expect_equal(leg_press$latest_recorded_max_weight_lb, 200)
   expect_equal(leg_press$all_time_max_weight_lb, 200)
   expect_equal(leg_press$change_from_first_recorded_max_weight_lb, 135)
-  expect_equal(leg_press$latest_exercise_volume_lb, 8450)
-  expect_equal(leg_press$all_time_highest_exercise_volume_lb, 9125)
+  expect_equal(leg_press$latest_exercise_volume_lb, 10250)
+  expect_equal(leg_press$all_time_highest_exercise_volume_lb, 10250)
   expect_true(leg_press$has_repeated_observations)
 
   biceps <- progress |>

@@ -58,7 +58,7 @@ The renv lockfile records R packages used by the analysis code, tests, and dashb
 Rscript tests/testthat.R
 ```
 
-The regression tests assert that the seed dataset has 105 set records, four activities, and the validated chronological session totals:
+The regression tests assert that the seed dataset has 129 set records, five activities, and the validated chronological session totals:
 
 ```text
 sets:   23, 26, 26

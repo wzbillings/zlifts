@@ -3,8 +3,8 @@ test_that("seed set data preserve expected rows and activities", {
   sets <- read_lifting_sets(seed_lifting_sets_path())
 
   expect_s3_class(sets, "tbl_df")
-  expect_equal(nrow(sets), 105)
-  expect_equal(dplyr::n_distinct(sets$activity_id), 4)
+  expect_equal(nrow(sets), 129)
+  expect_equal(dplyr::n_distinct(sets$activity_id), 5)
 })
 
 test_that("session summaries reproduce validated Garmin totals", {
@@ -13,9 +13,9 @@ test_that("session summaries reproduce validated Garmin totals", {
     summarize_sessions() |>
     dplyr::arrange(.data$date)
 
-  expect_equal(sessions$total_volume_lb, c(18805, 25665, 33325, 37920))
-  expect_equal(sessions$total_sets, c(23L, 26L, 26L, 30L))
-  expect_equal(sessions$total_reps, c(336L, 348L, 380L, 428L))
+  expect_equal(sessions$total_volume_lb, c(18805, 25665, 33325, 37920, 37800))
+  expect_equal(sessions$total_sets, c(23L, 26L, 26L, 30L, 24L))
+  expect_equal(sessions$total_reps, c(336L, 348L, 380L, 428L, 337L))
 })
 
 test_that("exercise summaries use canonical exercise names and expected measures", {
