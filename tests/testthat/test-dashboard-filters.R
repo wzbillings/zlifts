@@ -39,3 +39,24 @@ test_that("dashboard filter script resizes charts after dashboard navigation", {
   expect_true(grepl("Plotly.Plots.resize", script, fixed = TRUE))
   expect_true(grepl("ResizeObserver", script, fixed = TRUE))
 })
+test_that("dashboard filter payload calculates volume from reps and weight", {
+  skip_if_no_seed_data()
+
+  sets <- read_lifting_sets(seed_lifting_sets_path())
+  sets <- sets[1, ]
+  sets$reps <- 2L
+  sets$weight_lb <- 10
+  sets$volume_lb <- 999
+
+  payload <- dashboard_filter_payload(sets)
+
+  expect_equal(payload$rows$volume_lb, 20)
+})
+
+test_that("dashboard filter script preserves all-missing aggregate values", {
+  script <- paste(readLines(file.path(find_project_root(), "dashboard", "zlifts-filters.js"), warn = FALSE), collapse = "\n")
+
+  expect_true(grepl("sumOrMissing", script, fixed = TRUE))
+  expect_false(grepl("total_reps += numberOrZero(row.reps)", script, fixed = TRUE))
+  expect_false(grepl("total_volume_lb += numberOrZero(row.volume_lb)", script, fixed = TRUE))
+})

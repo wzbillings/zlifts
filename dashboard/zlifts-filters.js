@@ -45,6 +45,14 @@
     return number === null ? 0 : number;
   }
 
+  function sumOrMissing(current, value) {
+    var number = asNumber(value);
+    if (number === null) {
+      return current;
+    }
+    return current === null ? number : current + number;
+  }
+
   function formatNumber(value, digits) {
     var number = asNumber(value);
     if (number === null) {
@@ -271,15 +279,15 @@
           date: row.date,
           workout_name: row.workout_name,
           total_sets: 0,
-          total_reps: 0,
-          total_volume_lb: 0,
+          total_reps: null,
+          total_volume_lb: null,
           exercises_set: new Set()
         };
       },
       function (session, row) {
         session.total_sets += 1;
-        session.total_reps += numberOrZero(row.reps);
-        session.total_volume_lb += numberOrZero(row.volume_lb);
+        session.total_reps = sumOrMissing(session.total_reps, row.reps);
+        session.total_volume_lb = sumOrMissing(session.total_volume_lb, row.volume_lb);
         session.exercises_set.add(row.exercise_label);
       }
     );
@@ -311,15 +319,15 @@
           exercise_label: row.exercise_label,
           movement_group: row.movement_group,
           sets: 0,
-          total_reps: 0,
-          total_volume_lb: 0,
+          total_reps: null,
+          total_volume_lb: null,
           max_weight_lb: null
         };
       },
       function (summary, row) {
         summary.sets += 1;
-        summary.total_reps += numberOrZero(row.reps);
-        summary.total_volume_lb += numberOrZero(row.volume_lb);
+        summary.total_reps = sumOrMissing(summary.total_reps, row.reps);
+        summary.total_volume_lb = sumOrMissing(summary.total_volume_lb, row.volume_lb);
         if (row.weight_lb !== null) {
           summary.max_weight_lb = summary.max_weight_lb === null ? row.weight_lb : Math.max(summary.max_weight_lb, row.weight_lb);
         }
@@ -632,7 +640,7 @@
     if (!status) {
       return;
     }
-    var totalVolume = rows.reduce(function (sum, row) { return sum + numberOrZero(row.volume_lb); }, 0);
+    var totalVolume = rows.reduce(function (sum, row) { return sumOrMissing(sum, row.volume_lb); }, null);
     var exerciseCount = uniqueValues(rows, "exercise_label").length;
     status.textContent = formatInteger(rows.length) + " sets | " +
       formatInteger(sessions.length) + " workouts | " +

@@ -404,3 +404,38 @@ test_that("Garmin Splits importer skips existing activity ids without overwritin
   expect_equal(imported$workout_name, "Existing 999111228")
   expect_equal(imported$exercise_raw, "Chest Press with Band")
 })
+test_that("Garmin Splits write mode does not leave partial set appends when workout write fails", {
+  skip_if_no_seed_data()
+  existing_path <- file.path(tempdir(), "lifting_sets-atomic-write.csv")
+  write_existing_sets(existing_path)
+  bad_workouts_dir <- file.path(tempdir(), paste0("missing-workouts-dir-", Sys.getpid(), "-", as.integer(Sys.time())))
+  bad_workouts_path <- file.path(bad_workouts_dir, "workouts.csv")
+
+  splits_path <- file.path(tempdir(), "2026-08-27-garmin-splits-999111231.csv")
+  write_splits_csv(
+    splits_path,
+    list(
+      Set = 1L,
+      "Exercise Name" = "Chest Press with Band",
+      Time = "0:30",
+      Rest = "1:00",
+      Reps = 10L,
+      Weight = 50,
+      Volume = 500
+    )
+  )
+
+  before <- readLines(existing_path, warn = FALSE)
+  expect_error(
+    ingest_garmin_splits(
+      paths = splits_path,
+      lifting_sets_path = existing_path,
+      workouts_path = bad_workouts_path,
+      exercise_mapping = test_import_mapping(),
+      write = TRUE
+    )
+  )
+  after <- readLines(existing_path, warn = FALSE)
+
+  expect_equal(after, before)
+})

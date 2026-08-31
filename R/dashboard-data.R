@@ -17,7 +17,7 @@ dashboard_filter_payload <- function(sets) {
       exercise_label = exercise_display_name(.data$exercise, .data$equipment_type),
       equipment_label = format_equipment_type(.data$equipment_type),
       calculated_volume_lb = set_volume(sets),
-      volume_lb = dplyr::coalesce(.data$volume_lb, .data$calculated_volume_lb)
+      volume_lb = .data$calculated_volume_lb
     ) |>
     dplyr::select(dplyr::all_of(c(
       "activity_id", "day", "date", "date_source", "workout_name",
