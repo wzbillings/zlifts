@@ -15,7 +15,7 @@ test_import_mapping <- function() {
 }
 
 test_empty_existing_sets <- function() {
-  read_lifting_sets(seed_lifting_sets_path(), apply_mapping = FALSE)[0, ]
+  read_lifting_sets(fixture_lifting_sets_path(), apply_mapping = FALSE)[0, ]
 }
 
 test_existing_sets <- function(activity_id = character()) {
@@ -53,8 +53,6 @@ write_existing_sets <- function(path, sets = test_empty_existing_sets()) {
 }
 
 test_that("Garmin Splits CSV parser emits canonical lifting set schema", {
-  skip_if_no_seed_data()
-
   splits_path <- file.path(tempdir(), "2026-08-27-garmin-splits-999111222.csv")
   write_splits_csv(
     splits_path,
@@ -75,7 +73,7 @@ test_that("Garmin Splits CSV parser emits canonical lifting set schema", {
     day = 4L
   )
 
-  expect_equal(names(parsed), names(read_lifting_sets(seed_lifting_sets_path(), apply_mapping = FALSE)))
+  expect_equal(names(parsed), canonical_lifting_set_columns())
   expect_equal(parsed$activity_id, c("999111222", "999111222"))
   expect_equal(parsed$day, c(4L, 4L))
   expect_equal(parsed$date, as.Date(c("2026-08-27", "2026-08-27")))
@@ -156,6 +154,7 @@ test_that("Garmin Splits parser preserves declared numeric NA sentinels", {
   expect_true(is.na(parsed$volume_lb[[2]]))
   expect_true(is.na(parsed$volume_matches_garmin[[3]]))
 })
+
 test_that("Garmin Splits parser fails clearly for unmapped exercises", {
   splits_path <- file.path(tempdir(), "2026-08-27-garmin-splits-999111224.csv")
   write_splits_csv(
@@ -224,7 +223,6 @@ test_that("Garmin Splits parser fails clearly for missing source columns", {
 })
 
 test_that("Garmin Splits check mode reports would_add without writing", {
-  skip_if_no_seed_data()
   existing_path <- file.path(tempdir(), "lifting_sets-check.csv")
   write_existing_sets(existing_path)
 
@@ -258,7 +256,6 @@ test_that("Garmin Splits check mode reports would_add without writing", {
 
 
 test_that("Garmin Splits ingest report preserves actionable parse error details", {
-  skip_if_no_seed_data()
   existing_path <- file.path(tempdir(), "lifting_sets-error-report.csv")
   write_existing_sets(existing_path)
 
@@ -287,8 +284,8 @@ test_that("Garmin Splits ingest report preserves actionable parse error details"
   expect_match(result$message, "Expected filename convention", fixed = TRUE)
   expect_match(result$message, "Received: workout.csv", fixed = TRUE)
 })
+
 test_that("Garmin Splits write mode appends once and skips reruns by activity id", {
-  skip_if_no_seed_data()
   existing_path <- file.path(tempdir(), "lifting_sets-write.csv")
   workouts_path <- file.path(tempdir(), "workouts-write.csv")
   write_existing_sets(existing_path)
@@ -339,7 +336,6 @@ test_that("Garmin Splits write mode appends once and skips reruns by activity id
 
 
 test_that("Garmin Splits importer reports duplicate files within one run accurately", {
-  skip_if_no_seed_data()
   existing_path <- file.path(tempdir(), "lifting_sets-duplicate-input.csv")
   write_existing_sets(existing_path)
 
@@ -372,8 +368,8 @@ test_that("Garmin Splits importer reports duplicate files within one run accurat
   expect_equal(result$status, c("would_add", "skipped"))
   expect_match(result$message[[2]], "already parsed earlier in this run", fixed = TRUE)
 })
+
 test_that("Garmin Splits importer skips existing activity ids without overwriting curated rows", {
-  skip_if_no_seed_data()
   existing_path <- file.path(tempdir(), "lifting_sets-skip.csv")
   write_existing_sets(existing_path, test_existing_sets("999111228"))
 
@@ -404,8 +400,8 @@ test_that("Garmin Splits importer skips existing activity ids without overwritin
   expect_equal(imported$workout_name, "Existing 999111228")
   expect_equal(imported$exercise_raw, "Chest Press with Band")
 })
+
 test_that("Garmin Splits write mode does not leave partial set appends when workout write fails", {
-  skip_if_no_seed_data()
   existing_path <- file.path(tempdir(), "lifting_sets-atomic-write.csv")
   write_existing_sets(existing_path)
   bad_workouts_dir <- file.path(tempdir(), paste0("missing-workouts-dir-", Sys.getpid(), "-", as.integer(Sys.time())))

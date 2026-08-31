@@ -1,26 +1,40 @@
-test_that("seed set data preserve expected rows and activities", {
-  skip_if_no_seed_data()
-  sets <- read_lifting_sets(seed_lifting_sets_path())
+test_that("processed set data keep canonical schema and populated activities", {
+  skip_if_no_processed_data()
+  sets <- read_processed_lifting_sets(apply_mapping = FALSE)
+  blank_activity <- is.na(sets$activity_id) | trimws(as.character(sets$activity_id)) == ""
 
   expect_s3_class(sets, "tbl_df")
-  expect_equal(nrow(sets), 129)
-  expect_equal(dplyr::n_distinct(sets$activity_id), 5)
+  expect_true(nrow(sets) > 0)
+  expect_true(all(canonical_lifting_set_columns() %in% names(sets)))
+  expect_false(any(blank_activity))
+  expect_true(dplyr::n_distinct(sets$activity_id) > 0)
 })
 
-test_that("session summaries reproduce validated Garmin totals", {
-  skip_if_no_seed_data()
-  sessions <- read_lifting_sets(seed_lifting_sets_path()) |>
+test_that("processed fixture validates against fixture workout metadata", {
+  sets <- read_fixture_lifting_sets()
+  workouts <- read_fixture_workouts()
+
+  result <- validate_lifting_data(
+    sets,
+    exercise_mapping = fixture_exercise_mapping_path(),
+    workouts = workouts
+  )
+
+  expect_true(all(result$status == "pass"))
+})
+
+test_that("session summaries reproduce processed fixture totals", {
+  sessions <- read_fixture_lifting_sets() |>
     summarize_sessions() |>
     dplyr::arrange(.data$date)
 
-  expect_equal(sessions$total_volume_lb, c(18805, 25665, 33325, 37920, 37800))
-  expect_equal(sessions$total_sets, c(23L, 26L, 26L, 30L, 24L))
-  expect_equal(sessions$total_reps, c(336L, 348L, 380L, 428L, 337L))
+  expect_equal(sessions$total_volume_lb, c(3060, 2890, 3520))
+  expect_equal(sessions$total_sets, c(4L, 4L, 4L))
+  expect_equal(sessions$total_reps, c(40L, 38L, 36L))
 })
 
-test_that("exercise summaries use canonical exercise names and expected measures", {
-  skip_if_no_seed_data()
-  summaries <- read_lifting_sets(seed_lifting_sets_path()) |>
+test_that("exercise summaries use fixture canonical exercise names and expected measures", {
+  summaries <- read_fixture_lifting_sets() |>
     summarize_exercises()
 
   expect_true(all(c(
@@ -30,15 +44,14 @@ test_that("exercise summaries use canonical exercise names and expected measures
   ) %in% names(summaries)))
   expect_equal(
     summaries |>
-      dplyr::filter(.data$date == as.Date("2026-08-26"), .data$exercise == "Seated Leg Press", .data$equipment_type == "machine") |>
+      dplyr::filter(.data$date == as.Date("2026-01-05"), .data$exercise == "Seated Leg Press", .data$equipment_type == "machine") |>
       dplyr::pull(.data$total_volume_lb),
-    9125
+    2780
   )
 })
 
-test_that("exercise summaries distinguish canonical equipment types", {
-  skip_if_no_seed_data()
-  summaries <- read_lifting_sets(seed_lifting_sets_path()) |>
+test_that("exercise summaries distinguish fixture canonical equipment types", {
+  summaries <- read_fixture_lifting_sets() |>
     summarize_exercises()
 
   biceps <- summaries |>
@@ -47,12 +60,11 @@ test_that("exercise summaries distinguish canonical equipment types", {
   expect_setequal(biceps[["equipment_type"]], c("dumbbell", "machine"))
 })
 
-test_that("weighted set volume is reps times weight", {
-  skip_if_no_seed_data()
-  sets <- read_lifting_sets(seed_lifting_sets_path())
+test_that("processed set volume is reps times weight where both inputs are present", {
+  skip_if_no_processed_data()
+  sets <- read_processed_lifting_sets(apply_mapping = FALSE)
   weighted <- sets |>
-    dplyr::filter(!is.na(.data$reps), !is.na(.data$weight_lb), !is.na(.data$volume_lb))
+    dplyr::filter(!is.na(.data$reps), !is.na(.data$weight_lb))
 
   expect_equal(weighted$volume_lb, weighted$reps * weighted$weight_lb)
 })
-

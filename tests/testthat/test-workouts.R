@@ -1,26 +1,23 @@
-workouts_seed_path <- function() {
-  file.path(dirname(seed_lifting_sets_path()), "workouts.csv")
-}
+test_that("processed workout metadata returns one canonical row per activity", {
+  skip_if_no_processed_data()
 
-test_that("workout metadata reader returns one canonical row per activity", {
-  skip_if_no_seed_data()
+  workouts <- read_workouts(processed_workouts_path())
+  sets <- read_processed_lifting_sets(apply_mapping = FALSE)
+  set_activity_ids <- unique(sets$activity_id)
+  blank_workout_activity <- is.na(workouts$activity_id) | trimws(as.character(workouts$activity_id)) == ""
 
-  workouts <- read_workouts(workouts_seed_path())
-  sets <- read_lifting_sets(seed_lifting_sets_path(), apply_mapping = FALSE)
-
-  expect_identical(
-    names(workouts),
-    c("activity_id", "day", "date", "date_source", "workout_name")
-  )
-  expect_equal(nrow(workouts), dplyr::n_distinct(sets$activity_id))
+  expect_identical(names(workouts), required_workout_columns())
+  expect_false(any(blank_workout_activity))
+  expect_equal(nrow(workouts), dplyr::n_distinct(workouts$activity_id))
   expect_equal(anyDuplicated(workouts$activity_id), 0L)
+  expect_setequal(workouts$activity_id, set_activity_ids)
 })
 
 test_that("lifting data validation flags mismatched workout metadata", {
-  skip_if_no_seed_data()
+  skip_if_no_processed_data()
 
-  sets <- read_lifting_sets(seed_lifting_sets_path(), apply_mapping = FALSE)
-  workouts <- read_workouts(workouts_seed_path())
+  sets <- read_processed_lifting_sets(apply_mapping = FALSE)
+  workouts <- read_workouts(processed_workouts_path())
   workouts$workout_name[[1]] <- "Different workout"
 
   result <- validate_lifting_data(sets, workouts = workouts)
