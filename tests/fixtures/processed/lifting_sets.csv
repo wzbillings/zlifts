@@ -1,13 +1,13 @@
-activity_id,day,date,date_source,workout_name,set_number,exercise_raw,exercise,movement_group,equipment_type,set_type,time_raw,time_seconds,rest_raw,rest_seconds,reps,weight_lb,garmin_volume_lb,volume_lb,volume_matches_garmin
-1001,1,2026-01-01,fixture,Fixture Strength A,1,Leg Press,Seated Leg Press,Seated Leg Press,machine,,0:45,45,1:00,60,10,100,1000,1000,TRUE
-1001,1,2026-01-01,fixture,Fixture Strength A,2,Leg Press,Seated Leg Press,Seated Leg Press,machine,,0:40,40,1:15,75,8,120,960,960,TRUE
-1001,1,2026-01-01,fixture,Fixture Strength A,3,Lat Pull-down,Lat Pull-down,Lat Pull-down,machine,,0:35,35,1:00,60,10,80,800,800,TRUE
-1001,1,2026-01-01,fixture,Fixture Strength A,4,Dumbbell Biceps Curl,Biceps Curl,Biceps Curl,dumbbell,,0:30,30,1:00,60,12,25,300,300,TRUE
-1002,2,2026-01-03,fixture,Fixture Strength B,1,Leg Press,Seated Leg Press,Seated Leg Press,machine,,0:45,45,1:00,60,10,130,1300,1300,TRUE
-1002,2,2026-01-03,fixture,Fixture Strength B,2,Lat Pull-down,Lat Pull-down,Lat Pull-down,machine,,0:35,35,1:00,60,8,80,640,640,TRUE
-1002,2,2026-01-03,fixture,Fixture Strength B,3,Cable Biceps Curl,Biceps Curl,Biceps Curl,machine,,0:30,30,1:00,60,10,45,450,450,TRUE
-1002,2,2026-01-03,fixture,Fixture Strength B,4,Chest Press with Band,Chest Press,Chest Press,machine,,0:40,40,1:00,60,10,50,500,500,TRUE
-1003,3,2026-01-05,fixture,Fixture Strength C,1,Leg Press,Seated Leg Press,Seated Leg Press,machine,,0:45,45,1:00,60,10,150,1500,1500,TRUE
-1003,3,2026-01-05,fixture,Fixture Strength C,2,Leg Press,Seated Leg Press,Seated Leg Press,machine,,0:40,40,1:15,75,8,160,1280,1280,TRUE
-1003,3,2026-01-05,fixture,Fixture Strength C,3,Dumbbell Biceps Curl,Biceps Curl,Biceps Curl,dumbbell,,0:30,30,1:00,60,10,30,300,300,TRUE
-1003,3,2026-01-05,fixture,Fixture Strength C,4,Chest Press with Band,Chest Press,Chest Press,machine,,0:40,40,1:00,60,8,55,440,440,TRUE
+activity_id,day,date,date_source,workout_name,set_number,exercise_raw,exercise,exercise_variant,movement_group,equipment_type,set_type,time_raw,time_seconds,rest_raw,rest_seconds,reps,weight_lb,garmin_volume_lb,volume_lb,volume_matches_garmin
+1001,1,2026-01-01,fixture,Fixture Strength A,1,Leg Press,Seated Leg Press,,Seated Leg Press,machine,,0:45,45,1:00,60,10,100,1000,1000,TRUE
+1001,1,2026-01-01,fixture,Fixture Strength A,2,Leg Press,Seated Leg Press,,Seated Leg Press,machine,,0:40,40,1:15,75,8,120,960,960,TRUE
+1001,1,2026-01-01,fixture,Fixture Strength A,3,Lat Pull-down,Lat Pull-down,,Lat Pull-down,machine,,0:35,35,1:00,60,10,80,800,800,TRUE
+1001,1,2026-01-01,fixture,Fixture Strength A,4,Dumbbell Biceps Curl,Biceps Curl,,Biceps Curl,dumbbell,,0:30,30,1:00,60,12,25,300,300,TRUE
+1002,2,2026-01-03,fixture,Fixture Strength B,1,Leg Press,Seated Leg Press,,Seated Leg Press,machine,,0:45,45,1:00,60,10,130,1300,1300,TRUE
+1002,2,2026-01-03,fixture,Fixture Strength B,2,Lat Pull-down,Lat Pull-down,,Lat Pull-down,machine,,0:35,35,1:00,60,8,80,640,640,TRUE
+1002,2,2026-01-03,fixture,Fixture Strength B,3,Cable Biceps Curl,Biceps Curl,,Biceps Curl,machine,,0:30,30,1:00,60,10,45,450,450,TRUE
+1002,2,2026-01-03,fixture,Fixture Strength B,4,Chest Press with Band,Chest Press,,Chest Press,machine,,0:40,40,1:00,60,10,50,500,500,TRUE
+1003,3,2026-01-05,fixture,Fixture Strength C,1,Leg Press,Seated Leg Press,,Seated Leg Press,machine,,0:45,45,1:00,60,10,150,1500,1500,TRUE
+1003,3,2026-01-05,fixture,Fixture Strength C,2,Leg Press,Seated Leg Press,,Seated Leg Press,machine,,0:40,40,1:15,75,8,160,1280,1280,TRUE
+1003,3,2026-01-05,fixture,Fixture Strength C,3,Dumbbell Biceps Curl,Biceps Curl,,Biceps Curl,dumbbell,,0:30,30,1:00,60,10,30,300,300,TRUE
+1003,3,2026-01-05,fixture,Fixture Strength C,4,Chest Press with Band,Chest Press,,Chest Press,machine,,0:40,40,1:00,60,8,55,440,440,TRUE

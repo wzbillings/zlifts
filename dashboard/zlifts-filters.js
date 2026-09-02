@@ -101,6 +101,7 @@
     normalized.date = String(row.date || "");
     normalized.workout_name = row.workout_name || "Workout";
     normalized.exercise = row.exercise || row.exercise_raw || "Unknown exercise";
+    normalized.exercise_variant = row.exercise_variant || "";
     normalized.equipment_type = row.equipment_type || "unknown";
     normalized.equipment_label = row.equipment_label || titleCase(normalized.equipment_type);
     normalized.exercise_label = row.exercise_label || normalized.exercise;
@@ -177,8 +178,8 @@
       filters.startDate = start && start.value ? start.value : state.minDate;
       filters.endDate = end && end.value ? end.value : state.maxDate;
     }
-    if (excludeField !== "exercise") {
-      filters.exercise = activeSelectValues(byId("exercise-filter"));
+    if (excludeField !== "exercise_label") {
+      filters.exercise_label = activeSelectValues(byId("exercise-filter"));
     }
     if (excludeField !== "movement_group") {
       filters.movement_group = activeSelectValues(byId("movement-filter"));
@@ -197,7 +198,7 @@
     if (filters.endDate && row.date > filters.endDate) {
       return false;
     }
-    if (filters.exercise && !filters.exercise.has(String(row.exercise))) {
+    if (filters.exercise_label && !filters.exercise_label.has(String(row.exercise_label))) {
       return false;
     }
     if (filters.movement_group && !filters.movement_group.has(String(row.movement_group))) {
@@ -253,7 +254,7 @@
   }
 
   function refreshLinkedFilters() {
-    populateSelect("exercise-filter", "exercise");
+    populateSelect("exercise-filter", "exercise_label");
     populateSelect("movement-filter", "movement_group");
     populateSelect("equipment-filter", "equipment_type");
   }
@@ -307,7 +308,7 @@
     var summaries = groupRows(
       rows,
       function (row) {
-        return [row.activity_id, row.date, row.exercise, row.equipment_type].join("\r");
+        return [row.activity_id, row.date, row.exercise, row.exercise_variant, row.equipment_type].join("\r");
       },
       function (row) {
         return {
@@ -315,6 +316,7 @@
           date: row.date,
           workout_name: row.workout_name,
           exercise: row.exercise,
+          exercise_variant: row.exercise_variant,
           equipment_type: row.equipment_type,
           equipment_label: row.equipment_label,
           exercise_label: row.exercise_label,
@@ -343,10 +345,11 @@
   function summarizeExerciseProgress(exerciseSummaries) {
     var grouped = groupRows(
       exerciseSummaries,
-      function (row) { return [row.exercise, row.equipment_type].join("\r"); },
+      function (row) { return [row.exercise, row.exercise_variant, row.equipment_type].join("\r"); },
       function (row) {
         return {
           exercise: row.exercise,
+          exercise_variant: row.exercise_variant,
           equipment_type: row.equipment_type,
           equipment_label: row.equipment_label,
           exercise_label: row.exercise_label,
@@ -478,7 +481,7 @@
         x: labelRows.map(function (row) { return row.date; }),
         y: labelRows.map(function (row) { return row[valueField]; }),
         customdata: labelRows.map(function (row) {
-          return [row.exercise, row.equipment_label, row.sets, row.total_reps, row.total_volume_lb, row.max_weight_lb];
+          return [row.exercise_label, row.equipment_label, row.sets, row.total_reps, row.total_volume_lb, row.max_weight_lb];
         }),
         line: { color: palette[index % palette.length], width: 2 },
         marker: { color: palette[index % palette.length], size: 7 },
@@ -544,7 +547,7 @@
           size: labelRows.map(function (row) { return Math.max(7, Math.min(20, numberOrZero(row.reps) + 4)); })
         },
         customdata: labelRows.map(function (row) {
-          return [row.exercise, row.equipment_label, row.set_number, row.reps, row.volume_lb, row.workout_name];
+          return [row.exercise_label, row.equipment_label, row.set_number, row.reps, row.volume_lb, row.workout_name];
         }),
         hovertemplate: "Date: %{x}<br>Workout: %{customdata[5]}<br>Exercise: %{customdata[0]}<br>Type: %{customdata[1]}<br>Set: %{customdata[2]}<br>Weight: %{y:,.0f} lb<br>Reps: %{customdata[3]}<br>Volume: %{customdata[4]:,.0f} lb<extra></extra>"
       };
@@ -669,7 +672,7 @@
     renderWorkoutDetail();
 
     renderTable("exercise-progress-table", progress, [
-      { key: "exercise", label: "Exercise" },
+      { key: "exercise_label", label: "Exercise" },
       { key: "equipment_label", label: "Type" },
       { key: "workout_count", label: "Workouts", align: "right", format: formatInteger },
       { key: "latest_recorded_max_weight_lb", label: "Latest max", align: "right", format: formatLb },

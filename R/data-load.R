@@ -13,7 +13,8 @@
 #' @return A tibble with one row per recorded lifting set.
 read_lifting_sets <- function(path = file.path("data", "processed", "lifting_sets.csv"),
                               apply_mapping = TRUE,
-                              exercise_mapping = NULL) {
+                              exercise_mapping = NULL,
+                              exercise_setups = NULL) {
   if (!file.exists(path)) {
     rlang::abort(
       c("Cannot find lifting set data.", x = paste("Path does not exist:", path)),
@@ -32,6 +33,7 @@ read_lifting_sets <- function(path = file.path("data", "processed", "lifting_set
       set_number = readr::col_integer(),
       exercise_raw = readr::col_character(),
       exercise = readr::col_character(),
+      exercise_variant = readr::col_character(),
       movement_group = readr::col_character(),
       equipment_type = readr::col_character(),
       set_type = readr::col_character(),
@@ -59,12 +61,18 @@ read_lifting_sets <- function(path = file.path("data", "processed", "lifting_set
   if (is.null(exercise_mapping)) {
     exercise_mapping <- file.path(dirname(path), "exercise_mapping.csv")
   }
+  if (is.null(exercise_setups)) {
+    exercise_setups <- default_exercise_setups_path(lifting_sets_path = path)
+  }
   attr(sets, "exercise_mapping_path") <- exercise_mapping
+  attr(sets, 'exercise_setups_path') <- exercise_setups
   attr(sets, "workouts_path") <- default_workouts_path(lifting_sets_path = path)
 
   if (apply_mapping) {
     sets <- apply_exercise_mapping(sets, exercise_mapping)
+    sets <- apply_exercise_setups(sets, exercise_setups)
     attr(sets, "exercise_mapping_path") <- exercise_mapping
+    attr(sets, 'exercise_setups_path') <- exercise_setups
     attr(sets, "workouts_path") <- default_workouts_path(lifting_sets_path = path)
   }
 

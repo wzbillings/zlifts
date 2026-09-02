@@ -1,7 +1,7 @@
 required_lifting_columns <- function() {
   c(
     "activity_id", "day", "date", "workout_name", "set_number",
-    "exercise_raw", "exercise", "movement_group", "equipment_type", "set_type",
+    "exercise_raw", "exercise", "exercise_variant", "movement_group", "equipment_type", "set_type",
     "time_seconds", "rest_seconds", "reps", "weight_lb",
     "garmin_volume_lb", "volume_lb", "volume_matches_garmin"
   )

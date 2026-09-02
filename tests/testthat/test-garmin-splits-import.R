@@ -7,6 +7,7 @@ test_import_mapping <- function() {
   tibble::tibble(
     exercise_raw = c("Chest Press with Band", "Leg Press"),
     exercise = c("Chest Press", "Seated Leg Press"),
+    exercise_variant = NA_character_,
     movement_group = c("Chest Press", "Seated Leg Press"),
     equipment_type = c("machine", "machine"),
     review_status = c("reviewed", "reviewed"),
@@ -32,6 +33,7 @@ test_existing_sets <- function(activity_id = character()) {
     set_number = 1L,
     exercise_raw = "Chest Press with Band",
     exercise = "Chest Press",
+    exercise_variant = NA_character_,
     movement_group = "Chest Press",
     equipment_type = "machine",
     set_type = NA_character_,
@@ -177,7 +179,7 @@ test_that("Garmin Splits parser fails clearly for unmapped exercises", {
       exercise_mapping_path = "data/processed/exercise_mapping.csv",
       day = 1L
     ),
-    "Mystery Lift,Mystery Lift,Mystery Lift,machine,inferred,Review suggested mapping"
+    "Mystery Lift,Mystery Lift,,Mystery Lift,machine,inferred,Review suggested mapping"
   )
 })
 

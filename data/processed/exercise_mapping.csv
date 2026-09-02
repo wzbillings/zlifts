@@ -1,20 +1,20 @@
-exercise_raw,exercise,movement_group,equipment_type,review_status,notes
-Chess Press with Band,Chest Press,Chest Press,machine,reviewed,User-supplied spelling. Current data uses Chest Press with Band.
-Chest Press with Band,Chest Press,Chest Press,machine,reviewed,Current Garmin export spelling.
-Suspension Chest Press,Chest Press,Chest Press,machine,reviewed,Defaulted to machine after canonical Chest Press mapping.
-Shoulder Press,Shoulder Press,Shoulder Press,machine,reviewed,Conservative mapping for Garmin Splits import.
-Crunch,Ab Crunch,Ab Crunch,machine,reviewed,
-Weighted Crunch,Ab Crunch,Ab Crunch,machine,reviewed,
-Cable Biceps Curl,Biceps Curl,Biceps Curl,machine,reviewed,User override: machine despite Garmin cable label.
-Dumbbell Biceps Curl,Biceps Curl,Biceps Curl,dumbbell,inferred,Aligned with biceps curl mappings because this raw name exists in current data.
-Curl,Biceps Curl,Biceps Curl,machine,reviewed,
-Triceps Press-down,Triceps Pulldown,Triceps Pulldown,machine,reviewed,
-Banded Tricep Extension,Tricep Extension,Tricep Extension,machine,reviewed,User override: machine despite Garmin banded label.
-Weighted Seated Calf Raise,Calf Extension,Calf Extension,machine,reviewed,
-Leg Press,Seated Leg Press,Seated Leg Press,machine,reviewed,
-Weighted Static Back Extension,Back Extension,Back Extension,machine,reviewed,
-Weighted Sliding Hip Adduction,Hip Adduction,Hip Adduction,machine,reviewed,
-Weighted Standing Hip Abduction,Hip Abduction,Hip Abduction,machine,reviewed,
-Weighted Leg Curl,Leg Curl,Leg Curl,machine,reviewed,
-Row,Row,Row,machine,inferred,Defaulted to machine; no user override supplied.
-Lat Pull-down,Lat Pull-down,Lat Pull-down,machine,inferred,Defaulted to machine; no user override supplied.
+exercise_raw,exercise,exercise_variant,movement_group,equipment_type,review_status,notes
+Chess Press with Band,Chest Press,,Chest Press,machine,reviewed,User-supplied spelling. Current data uses Chest Press with Band.
+Chest Press with Band,Chest Press,,Chest Press,machine,reviewed,Current Garmin export spelling.
+Suspension Chest Press,Chest Press,,Chest Press,machine,reviewed,Defaulted to machine after canonical Chest Press mapping.
+Shoulder Press,Shoulder Press,,Shoulder Press,machine,reviewed,Conservative mapping for Garmin Splits import.
+Crunch,Ab Crunch,,Ab Crunch,machine,reviewed,
+Weighted Crunch,Ab Crunch,,Ab Crunch,machine,reviewed,
+Cable Biceps Curl,Biceps Curl,,Biceps Curl,machine,reviewed,User override: machine despite Garmin cable label.
+Dumbbell Biceps Curl,Biceps Curl,,Biceps Curl,dumbbell,inferred,Aligned with biceps curl mappings because this raw name exists in current data.
+Curl,Biceps Curl,,Biceps Curl,machine,reviewed,
+Triceps Press-down,Triceps Pulldown,,Triceps Pulldown,machine,reviewed,
+Banded Tricep Extension,Tricep Extension,,Tricep Extension,machine,reviewed,User override: machine despite Garmin banded label.
+Weighted Seated Calf Raise,Calf Extension,,Calf Extension,machine,reviewed,
+Leg Press,Seated Leg Press,,Seated Leg Press,machine,reviewed,
+Weighted Static Back Extension,Back Extension,,Back Extension,machine,reviewed,
+Weighted Sliding Hip Adduction,Hip Adduction,,Hip Adduction,machine,reviewed,
+Weighted Standing Hip Abduction,Hip Abduction,,Hip Abduction,machine,reviewed,
+Weighted Leg Curl,Leg Curl,,Leg Curl,machine,reviewed,
+Row,Row,,Row,machine,inferred,Defaulted to machine; no user override supplied.
+Lat Pull-down,Lat Pull-down,,Lat Pull-down,machine,inferred,Defaulted to machine; no user override supplied.

@@ -70,7 +70,7 @@ test_that("unmapped machine-like exercises include conservative copy-ready mappi
 
   expect_error(
     apply_exercise_mapping(sets, mapping),
-    "Selectorized Pec Fly,Selectorized Pec Fly,Selectorized Pec Fly,machine,inferred,Review suggested mapping"
+    "Selectorized Pec Fly,Selectorized Pec Fly,,Selectorized Pec Fly,machine,inferred,Review suggested mapping"
   )
 })
 
@@ -80,7 +80,7 @@ test_that("unmapped dumbbell exercises include dumbbell copy-ready mapping rows"
 
   expect_error(
     apply_exercise_mapping(sets, mapping),
-    "Dumbbell Lateral Raise,Dumbbell Lateral Raise,Dumbbell Lateral Raise,dumbbell,inferred,Review suggested mapping"
+    "Dumbbell Lateral Raise,Dumbbell Lateral Raise,,Dumbbell Lateral Raise,dumbbell,inferred,Review suggested mapping"
   )
 })
 
@@ -113,4 +113,48 @@ test_that("validation reports unmapped Garmin exercise names", {
   expect_equal(mapping_check[["status"]], "fail")
   expect_match(mapping_check[["message"]], "Unmapped Garmin exercise name", fixed = TRUE)
   expect_equal(mapping_check[["n"]], 1L)
+})
+
+test_that('exercise setup overrides assign variants by activity and raw exercise', {
+  sets <- tibble::tibble(
+    activity_id = c('single-activity', 'double-activity'),
+    exercise_raw = c('Row', 'Row'),
+    exercise = c('Row', 'Row'),
+    exercise_variant = c(NA_character_, NA_character_),
+    movement_group = c('Row', 'Row'),
+    equipment_type = c('machine', 'machine')
+  )
+  setups <- tibble::tibble(
+    activity_id = c('single-activity', 'double-activity'),
+    date = as.Date(c('2026-01-01', '2026-01-03')),
+    exercise_raw = c('Row', 'Row'),
+    exercise_variant = c('single-pulley', 'double-pulley'),
+    review_status = c('reviewed', 'reviewed'),
+    notes = c(NA_character_, NA_character_)
+  )
+
+  mapped <- apply_exercise_setups(sets, setups)
+
+  expect_equal(mapped[['exercise_variant']], c('single-pulley', 'double-pulley'))
+  expect_equal(mapped[['exercise']], c('Row', 'Row'))
+  expect_equal(mapped[['movement_group']], c('Row', 'Row'))
+})
+
+test_that('processed row setup assignments distinguish current row machines', {
+  skip_if_no_processed_data()
+
+  sets <- read_processed_lifting_sets(apply_mapping = FALSE)
+  row_variants <- sets |>
+    dplyr::filter(.data[['exercise_raw']] == 'Row') |>
+    dplyr::distinct(.data[['date']], .data[['activity_id']], .data[['exercise_variant']]) |>
+    dplyr::arrange(.data[['date']])
+
+  expect_equal(row_variants[['date']], as.Date(c(
+    '2026-08-22', '2026-08-24', '2026-08-26',
+    '2026-08-28', '2026-08-31', '2026-09-02'
+  )))
+  expect_equal(row_variants[['exercise_variant']], c(
+    'single-pulley', 'double-pulley', 'double-pulley',
+    'single-pulley', 'single-pulley', 'double-pulley'
+  ))
 })

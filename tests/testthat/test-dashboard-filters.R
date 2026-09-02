@@ -72,3 +72,34 @@ test_that("dashboard filter script preserves all-missing aggregate values", {
   expect_false(grepl("total_reps += numberOrZero(row.reps)", script, fixed = TRUE))
   expect_false(grepl("total_volume_lb += numberOrZero(row.volume_lb)", script, fixed = TRUE))
 })
+
+test_that('dashboard payload exposes variant-aware exercise labels', {
+  sets <- tibble::tibble(
+    activity_id = c('single-activity', 'double-activity'),
+    day = c(1L, 2L),
+    date = as.Date(c('2026-01-01', '2026-01-03')),
+    date_source = c('fixture', 'fixture'),
+    workout_name = c('Single Row Day', 'Double Row Day'),
+    set_number = c(1L, 1L),
+    exercise_raw = c('Row', 'Row'),
+    exercise = c('Row', 'Row'),
+    exercise_variant = c('single-pulley', 'double-pulley'),
+    movement_group = c('Row', 'Row'),
+    equipment_type = c('machine', 'machine'),
+    set_type = c(NA_character_, NA_character_),
+    time_raw = c('0:30', '0:30'),
+    time_seconds = c(30, 30),
+    rest_raw = c('1:00', '1:00'),
+    rest_seconds = c(60, 60),
+    reps = c(10L, 10L),
+    weight_lb = c(70, 35),
+    garmin_volume_lb = c(700, 350),
+    volume_lb = c(700, 350),
+    volume_matches_garmin = c(TRUE, TRUE)
+  )
+
+  payload <- dashboard_filter_payload(sets)
+
+  expect_true('exercise_variant' %in% names(payload[['rows']]))
+  expect_equal(payload[['rows']][['exercise_label']], c('Row (single-pulley)', 'Row (double-pulley)'))
+})

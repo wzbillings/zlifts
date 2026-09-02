@@ -46,11 +46,25 @@ format_hover_count <- function(x) {
   )
 }
 
-exercise_display_name <- function(exercise, equipment_type) {
+exercise_display_name <- function(exercise, equipment_type, exercise_variant = NULL) {
   label <- as.character(exercise)
   type <- tolower(trimws(as.character(equipment_type)))
-  show_type <- !is.na(type) & type != "" & type != "machine"
-  label[show_type] <- paste0(label[show_type], " (", type[show_type], ")")
+  variant <- if (is.null(exercise_variant)) {
+    rep(NA_character_, length(label))
+  } else {
+    trimws(as.character(exercise_variant))
+  }
+
+  variant[is.na(variant) | variant == ''] <- NA_character_
+  show_type <- !is.na(type) & type != '' & type != 'machine'
+
+  suffix <- rep(NA_character_, length(label))
+  suffix[!is.na(variant)] <- variant[!is.na(variant)]
+  suffix[show_type & is.na(suffix)] <- type[show_type & is.na(suffix)]
+  suffix[show_type & !is.na(suffix)] <- paste0(suffix[show_type & !is.na(suffix)], ', ', type[show_type & !is.na(suffix)])
+
+  has_suffix <- !is.na(suffix) & suffix != ''
+  label[has_suffix] <- paste0(label[has_suffix], ' (', suffix[has_suffix], ')')
   label
 }
 

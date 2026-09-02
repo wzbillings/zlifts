@@ -8,12 +8,12 @@
 plot_exercise_volume <- function(exercise_summary, ncol = 3) {
   check_required_columns(
     exercise_summary,
-    c("date", "exercise", "equipment_type", "sets", "total_reps", "total_volume_lb")
+    c('date', 'exercise', 'exercise_variant', 'equipment_type', 'sets', 'total_reps', 'total_volume_lb')
   )
 
   exercise_summary <- dplyr::mutate(
     exercise_summary,
-    exercise_label = exercise_display_name(.data$exercise, .data$equipment_type),
+    exercise_label = exercise_display_name(.data[['exercise']], .data[['equipment_type']], .data[['exercise_variant']]),
     hover_text = paste0(
       "Date: ", format_hover_date(.data$date),
       "<br>Exercise: ", .data$exercise,

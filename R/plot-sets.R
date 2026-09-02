@@ -7,12 +7,12 @@
 plot_set_performance <- function(sets, ncol = 3) {
   check_required_columns(
     sets,
-    c("date", "set_number", "exercise", "equipment_type", "weight_lb", "reps", "volume_lb")
+    c('date', 'set_number', 'exercise', 'exercise_variant', 'equipment_type', 'weight_lb', 'reps', 'volume_lb')
   )
 
   sets <- dplyr::mutate(
     sets,
-    exercise_label = exercise_display_name(.data$exercise, .data$equipment_type),
+    exercise_label = exercise_display_name(.data[['exercise']], .data[['equipment_type']], .data[['exercise_variant']]),
     hover_text = paste0(
       "Date: ", format_hover_date(.data$date),
       "<br>Exercise: ", .data$exercise,

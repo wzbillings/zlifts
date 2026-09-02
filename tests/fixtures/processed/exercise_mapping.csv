@@ -1,6 +1,6 @@
-exercise_raw,exercise,movement_group,equipment_type,review_status,notes
-Leg Press,Seated Leg Press,Seated Leg Press,machine,reviewed,Fixture mapping
-Lat Pull-down,Lat Pull-down,Lat Pull-down,machine,reviewed,Fixture mapping
-Dumbbell Biceps Curl,Biceps Curl,Biceps Curl,dumbbell,reviewed,Fixture mapping
-Cable Biceps Curl,Biceps Curl,Biceps Curl,machine,reviewed,Fixture mapping
-Chest Press with Band,Chest Press,Chest Press,machine,reviewed,Fixture mapping
+exercise_raw,exercise,exercise_variant,movement_group,equipment_type,review_status,notes
+Leg Press,Seated Leg Press,,Seated Leg Press,machine,reviewed,Fixture mapping
+Lat Pull-down,Lat Pull-down,,Lat Pull-down,machine,reviewed,Fixture mapping
+Dumbbell Biceps Curl,Biceps Curl,,Biceps Curl,dumbbell,reviewed,Fixture mapping
+Cable Biceps Curl,Biceps Curl,,Biceps Curl,machine,reviewed,Fixture mapping
+Chest Press with Band,Chest Press,,Chest Press,machine,reviewed,Fixture mapping

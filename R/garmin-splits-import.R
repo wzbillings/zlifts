@@ -1,7 +1,7 @@
 canonical_lifting_set_columns <- function() {
   c(
     "activity_id", "day", "date", "date_source", "workout_name", "set_number",
-    "exercise_raw", "exercise", "movement_group", "equipment_type", "set_type",
+    "exercise_raw", "exercise", "exercise_variant", "movement_group", "equipment_type", "set_type",
     "time_raw", "time_seconds", "rest_raw", "rest_seconds", "reps", "weight_lb",
     "garmin_volume_lb", "volume_lb", "volume_matches_garmin"
   )
@@ -264,6 +264,7 @@ parse_garmin_splits_csv <- function(path,
     set_number = parse_garmin_integer_column(source[["Set"]], "Set"),
     exercise_raw = as.character(source[["Exercise Name"]]),
     exercise = as.character(source[["Exercise Name"]]),
+    exercise_variant = NA_character_,
     movement_group = as.character(source[["Exercise Name"]]),
     equipment_type = NA_character_,
     set_type = NA_character_,
@@ -448,11 +449,15 @@ ingest_garmin_splits <- function(paths = NULL,
                                  workouts_path = NULL,
                                  exercise_mapping = NULL,
                                  exercise_mapping_path = NULL,
+                                 exercise_setups_path = NULL,
                                  write = FALSE) {
   lifting_sets_path <- default_lifting_sets_path(lifting_sets_path)
   workouts_path <- default_workouts_path(workouts_path, lifting_sets_path)
   if (is.null(exercise_mapping_path)) {
     exercise_mapping_path <- file.path(dirname(lifting_sets_path), "exercise_mapping.csv")
+  }
+  if (is.null(exercise_setups_path)) {
+    exercise_setups_path <- default_exercise_setups_path(lifting_sets_path = lifting_sets_path)
   }
   mapping_input <- resolve_import_mapping_input(exercise_mapping, exercise_mapping_path)
 
@@ -539,6 +544,7 @@ ingest_garmin_splits <- function(paths = NULL,
     }
 
     rows <- parsed_result$value
+    rows <- apply_exercise_setups(rows, exercise_setups_path)
     current_activity_ids <- c(current_activity_ids, activity_id)
     current_counts[[activity_id]] <- nrow(rows)
     next_day <- next_day + 1L
@@ -565,7 +571,7 @@ ingest_garmin_splits <- function(paths = NULL,
 
   if (nrow(new_rows) > 0 && !has_failed_files) {
     combined_sets <- dplyr::bind_rows(existing_sets, new_rows)
-    validation <- validate_lifting_data(combined_sets, exercise_mapping = mapping_input, workouts = combined_workouts)
+    validation <- validate_lifting_data(combined_sets, exercise_mapping = mapping_input, workouts = combined_workouts, exercise_setups = exercise_setups_path)
     failed_validation <- validation[validation$status == "fail", , drop = FALSE]
 
     if (nrow(failed_validation) > 0) {

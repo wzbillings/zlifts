@@ -6,7 +6,8 @@ Live dashboard: <https://wzbillings.github.io/zlifts/>
 
 ## Data model
 
-The canonical analytical dataset is `data/processed/lifting_sets.csv`. It has one row per recorded set. `exercise_raw` preserves Garmin's standardized source name, while `exercise`, `movement_group`, and `equipment_type` are populated from `data/processed/exercise_mapping.csv` for canonical analysis and display. Workout-level metadata is stored once per activity in `data/processed/workouts.csv`; duplicated workout fields remain in `lifting_sets.csv` for dashboard compatibility.
+The canonical analytical dataset is data/processed/lifting_sets.csv. It has one row per recorded set. exercise_raw preserves Garmin source names; exercise, movement_group, and equipment_type come from data/processed/exercise_mapping.csv; and exercise_variant captures setup-specific load contexts such as single-pulley versus double-pulley rows. Workout-level metadata is stored once per activity in data/processed/workouts.csv; duplicated workout fields remain in lifting_sets.csv for dashboard compatibility.
+exercise_variant is blank when the raw exercise and equipment are already specific enough for long-term load comparison. When Garmin labels are too coarse, data/processed/exercise_setups.csv assigns variants by activity_id and exercise_raw.
 
 Volume is calculated as `reps * weight_lb`. Missing fields are preserved rather than inferred. In particular, warm-up sets are not inferred when `set_type` is missing.
 
@@ -85,7 +86,7 @@ The `.github/workflows/publish-dashboard.yml` workflow restores R packages from 
 
 ## Workout import flow
 
-Garmin Splits ingestion is implemented through `scripts/ingest-workouts.R`. Daily updates happen by placing local raw exports in `data/raw/workouts/`, checking them, writing normalized rows to `data/processed/lifting_sets.csv`, and keeping `data/processed/exercise_mapping.csv` in sync when new Garmin names appear. New workouts enter like this:
+Garmin Splits ingestion is implemented through scripts/ingest-workouts.R. Daily updates happen by placing local raw exports in data/raw/workouts/, checking them, writing normalized rows to data/processed/lifting_sets.csv, keeping data/processed/exercise_mapping.csv in sync when new Garmin names appear, and adding data/processed/exercise_setups.csv rows when a same-name exercise needs a setup-specific variant.
 
 ```text
 local-only Garmin Splits CSV export
@@ -105,7 +106,7 @@ Place daily Garmin Connect "Export Splits to CSV" files in `data/raw/workouts/` 
 YYYY-MM-DD-garmin-splits-<garmin-activity-id>.csv
 ```
 
-The leading date is the workout date. The trailing Garmin activity id is the stable activity identifier and importer dedupe key; do not rely on date alone. The Splits CSV supplies set number, exercise name, time, rest, reps, weight, and Garmin-reported volume. Splits CSV exports do not carry a workout name, so the importer sets `workout_name` to `Garmin Strength YYYY-MM-DD (<garmin-activity-id>)` until the maintainer curates `workout_name` in `data/processed/workouts.csv` and the compatibility columns in `data/processed/lifting_sets.csv` before commit.
+The leading date is the workout date. The trailing Garmin activity id is the stable activity identifier and importer dedupe key; do not rely on date alone. The Splits CSV supplies set number, exercise name, time, rest, reps, weight, and Garmin-reported volume. Splits CSV exports do not carry a workout name or setup variant, so the importer sets workout_name to Garmin Strength YYYY-MM-DD (<garmin-activity-id>) and leaves exercise_variant blank unless exercise_setups.csv has a reviewed activity_id plus exercise_raw assignment.
 Run the daily update command from the repository root. It first invokes the existing importer, then the regression suite and dashboard render. Check mode never changes processed data; write mode prints the resulting Git status after all verification succeeds.
 
 ```bash
@@ -121,11 +122,10 @@ Rscript scripts/update-workouts.R --write data/raw/workouts/2026-08-22-garmin-sp
 ```
 
 
+The importer appends normalized set-level records, requires any new exercise_raw values to be added to the mapping, applies reviewed setup variants from exercise_setups.csv, and lets the existing project-local functions regenerate summaries and dashboard output. Raw Garmin source files should remain local unless a maintainer intentionally creates a reduced, privacy-reviewed test fixture.
 
-The importer appends normalized set-level records, requires any new `exercise_raw` values to be added to the mapping, and lets the existing project-local functions regenerate summaries and dashboard output. Raw Garmin source files should remain local unless a maintainer intentionally creates a reduced, privacy-reviewed test fixture.
-
-When check mode finds an unmapped Garmin exercise name, it prints copy-ready CSV rows but does not modify `data/processed/exercise_mapping.csv`. Review each suggested row before adding it: keep the suggested `exercise_raw` exactly as Garmin exported it, replace the conservative `exercise` and `movement_group` placeholders with the appropriate canonical labels, and confirm `equipment_type`. Suggestions default to `machine`; explicit dumbbell, barbell, cable, band, and bodyweight labels are detected, but existing reviewed quirks remain authoritative. After updating the mapping manually, rerun `--check`; use `--write` only after the importer, tests, and render complete successfully.
+When check mode finds an unmapped Garmin exercise name, it prints copy-ready CSV rows but does not modify data/processed/exercise_mapping.csv. Review each suggested row before adding it: keep the suggested exercise_raw exactly as Garmin exported it, replace the conservative exercise and movement_group placeholders with the appropriate canonical labels, confirm equipment_type, and leave exercise_variant blank unless that Garmin name always implies a specific setup. Suggestions default to machine; explicit dumbbell, barbell, cable, band, and bodyweight labels are detected, but existing reviewed quirks remain authoritative. After updating the mapping or setup assignment manually, rerun --check; use --write only after the importer, tests, and render complete successfully.
 
 ## License
 
-This project is licensed under the GNU Affero General Public License v3.0 only (`AGPL-3.0-only`). See `LICENSE` for the full terms.
+This project is licensed under the GNU Affero General Public License v3.0 only (AGPL-3.0-only). See LICENSE for the full terms.

@@ -30,10 +30,10 @@ committed workout data -> validation -> summaries and plots -> Quarto dashboard 
 
 ## Data Rules
 
-- Preserve exact Garmin exercise names in `exercise_raw`. Treat `exercise` as the canonical mapped name, `equipment_type` as the equipment/mode distinction, and `movement_group` as organization, not mechanical equivalence.
+- Preserve exact Garmin exercise names in exercise_raw. Treat exercise as the canonical mapped name, exercise_variant as a setup/load-comparison qualifier, equipment_type as the equipment/mode distinction, and movement_group as organization, not mechanical equivalence.
 - Compute volume as `reps * weight_lb`.
 - Do not infer missing warm-up sets, hidden values, or missing Garmin fields.
-- New daily data should append normalized set-level records, add any new `exercise_raw` values to `data/processed/exercise_mapping.csv`, then let summaries and dashboard output regenerate.
+- New daily data should append normalized set-level records, add any new exercise_raw values to data/processed/exercise_mapping.csv, add activity_id plus exercise_raw rows to data/processed/exercise_setups.csv when Garmin labels are too coarse for setup-specific load comparison, then let summaries and dashboard output regenerate.
 - Keep raw Garmin exports local unless a maintainer intentionally creates a reduced, privacy-reviewed fixture.
 - Validate before rendering when touching ingestion, processed data, summaries, or plot logic.
 

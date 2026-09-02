@@ -73,7 +73,36 @@ workout_metadata_consistency <- function(sets, workouts) {
   )
 }
 
-validate_lifting_data <- function(sets, tolerance = 1e-8, exercise_mapping = NULL, workouts = NULL) {
+resolve_validation_exercise_setups <- function(sets, exercise_setups = NULL) {
+  if (!is.null(exercise_setups)) {
+    return(resolve_exercise_setups(exercise_setups))
+  }
+
+  exercise_setups_path <- attr(sets, 'exercise_setups_path', exact = TRUE)
+  if (is.character(exercise_setups_path) && length(exercise_setups_path) == 1L && file.exists(exercise_setups_path)) {
+    return(read_exercise_setups(exercise_setups_path))
+  }
+
+  NULL
+}
+
+exercise_setup_consistency <- function(sets, exercise_setups) {
+  assigned <- attach_exercise_setup_fields(sets, exercise_setups)
+  expected <- coalesce_optional_text(assigned[['.setup_exercise_variant']], NA_character_)
+  actual <- coalesce_optional_text(assigned[['exercise_variant']], NA_character_)
+  mismatch <- !is.na(expected) & (is.na(actual) | actual != expected)
+
+  list(
+    failures = sum(mismatch, na.rm = TRUE),
+    message = if (any(mismatch, na.rm = TRUE)) {
+      'Exercise setup assignments do not match set rows.'
+    } else {
+      'Exercise setup assignments match set rows.'
+    }
+  )
+}
+
+validate_lifting_data <- function(sets, tolerance = 1e-8, exercise_mapping = NULL, workouts = NULL, exercise_setups = NULL) {
   check_required_columns(sets)
   volume_matches_garmin <- parse_logical_text(sets$volume_matches_garmin)
 
@@ -99,7 +128,7 @@ validate_lifting_data <- function(sets, tolerance = 1e-8, exercise_mapping = NUL
     exercise_mapping <- attr(sets, "exercise_mapping_path", exact = TRUE)
   }
   mapped_exercises <- attach_exercise_mapping_fields(
-    dplyr::select(sets, dplyr::all_of(c("exercise_raw", "exercise", "movement_group", "equipment_type"))),
+    dplyr::select(sets, dplyr::all_of(c("exercise_raw", "exercise", "exercise_variant", "movement_group", "equipment_type"))),
     exercise_mapping
   )
   unmapped_exercises <- unique(mapped_exercises$exercise_raw[
@@ -126,6 +155,23 @@ validate_lifting_data <- function(sets, tolerance = 1e-8, exercise_mapping = NUL
     any(exercise_mapping_mismatch, na.rm = TRUE) ~ "Mapped exercise, movement_group, or equipment_type fields do not match the exercise mapping.",
     TRUE ~ "Exercise names are covered by the exercise mapping."
   )
+
+  exercise_setup_metadata <- resolve_validation_exercise_setups(sets, exercise_setups)
+  exercise_setup_check <- if (is.null(exercise_setup_metadata)) {
+    NULL
+  } else {
+    exercise_setup_consistency(sets, exercise_setup_metadata)
+  }
+  exercise_setup_row <- if (is.null(exercise_setup_check)) {
+    NULL
+  } else {
+    check_row(
+      'exercise_setup_assignments_match_sets',
+      if (exercise_setup_check[['failures']] > 0) 'fail' else 'pass',
+      exercise_setup_check[['message']],
+      exercise_setup_check[['failures']]
+    )
+  }
 
   workout_metadata <- resolve_validation_workouts(sets, workouts)
   workout_metadata_check <- if (is.null(workout_metadata)) {
@@ -194,6 +240,7 @@ validate_lifting_data <- function(sets, tolerance = 1e-8, exercise_mapping = NUL
       exercise_mapping_message,
       exercise_mapping_failures
     ),
+    exercise_setup_row,
     workout_metadata_row,
     check_row(
       "no_exact_duplicate_records",
