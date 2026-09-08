@@ -151,10 +151,12 @@ test_that('processed row setup assignments distinguish current row machines', {
 
   expect_equal(row_variants[['date']], as.Date(c(
     '2026-08-22', '2026-08-24', '2026-08-26',
-    '2026-08-28', '2026-08-31', '2026-09-02'
+    '2026-08-28', '2026-08-31', '2026-09-02',
+    '2026-09-08'
   )))
   expect_equal(row_variants[['exercise_variant']], c(
     'single-pulley', 'double-pulley', 'double-pulley',
-    'single-pulley', 'single-pulley', 'double-pulley'
+    'single-pulley', 'single-pulley', 'double-pulley',
+    'single-pulley'
   ))
 })
