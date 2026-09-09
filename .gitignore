@@ -15,6 +15,7 @@ renv/library/
 renv/staging/
 renv/sandbox/
 .superpowers/
+.worktrees/
 check/
 *.tar.gz
 *.Rcheck/
