@@ -3,6 +3,8 @@
 lifting_sets.csv is the canonical longitudinal set-level table used by tests and the dashboard. It keeps one row per recorded set, preserves Garmin source names in exercise_raw, stores canonical exercise, movement_group, and equipment_type values from exercise_mapping.csv, and stores setup-specific exercise_variant values when recorded weights are not comparable across machines or configurations. workouts.csv stores one row per activity with activity_id, day, date, date_source, and workout_name; the same workout fields remain duplicated in lifting_sets.csv for compatibility.
 exercise_setups.csv is a reviewed lookup keyed by activity_id and exercise_raw. Use it when Garmin offers the same source exercise name for multiple setups, such as single-pulley and double-pulley rows.
 
+The importer truncates fractional Garmin weights toward zero and recomputes processed volume fields from the normalized whole-pound weight. Validation rejects fractional processed weights. Missing Garmin source volume remains missing in `garmin_volume_lb`.
+
 Derived summaries, charts, and dashboard tables are recalculated from this file rather than committed as separate CSV snapshots. Raw Garmin exports belong under `data/raw/workouts/` for local-only ingestion work, not in this directory.
 
 Garmin Connect Splits CSV is the selected ingestion source. Before normalization, required workout date and stable activity id metadata comes from the ignored raw filename:

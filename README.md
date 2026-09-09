@@ -11,6 +11,8 @@ exercise_variant is blank when the raw exercise and equipment are already specif
 
 Volume is calculated as `reps * weight_lb`. Missing fields are preserved rather than inferred. In particular, warm-up sets are not inferred when `set_type` is missing.
 
+Weights are normalized to whole pounds by truncating fractional Garmin values toward zero. Both `garmin_volume_lb` and `volume_lb` are recomputed as `reps * weight_lb` from the normalized weight when the required source values are present. `garmin_volume_lb` remains missing when Garmin did not supply a source volume. `volume_matches_garmin` still records whether Garmin's original volume agreed with its original reps and weight.
+
 ## Public data policy
 
 This public repository commits only normalized analysis-ready lifting data at `data/processed/lifting_sets.csv` and workout metadata at `data/processed/workouts.csv`. Derived summaries are regenerated from that file by project-local R functions and are not committed as canonical data.
