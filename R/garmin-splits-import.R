@@ -247,13 +247,20 @@ parse_garmin_splits_csv <- function(path,
   source <- read_garmin_splits_source(path)
 
   reps <- parse_garmin_integer_column(source[["Reps"]], "Reps")
-  weight_lb <- parse_garmin_numeric_column(source[["Weight"]], "Weight")
-  garmin_volume_lb <- parse_garmin_numeric_column(source[["Volume"]], "Volume")
-  volume_lb <- reps * weight_lb
-  comparable_garmin_volume <- !is.na(garmin_volume_lb) & !is.na(volume_lb)
-  volume_matches_garmin <- rep(NA, length(volume_lb))
+  source_weight_lb <- parse_garmin_numeric_column(source[["Weight"]], "Weight")
+  source_garmin_volume_lb <- parse_garmin_numeric_column(source[["Volume"]], "Volume")
+
+  source_volume_lb <- reps * source_weight_lb
+  comparable_garmin_volume <- !is.na(source_garmin_volume_lb) & !is.na(source_volume_lb)
+  volume_matches_garmin <- rep(NA, length(source_volume_lb))
   volume_matches_garmin[comparable_garmin_volume] <-
-    abs(garmin_volume_lb[comparable_garmin_volume] - volume_lb[comparable_garmin_volume]) <= tolerance
+    abs(source_garmin_volume_lb[comparable_garmin_volume] -
+      source_volume_lb[comparable_garmin_volume]) <= tolerance
+
+  weight_lb <- trunc(source_weight_lb)
+  volume_lb <- reps * weight_lb
+  garmin_volume_lb <- volume_lb
+  garmin_volume_lb[is.na(source_garmin_volume_lb)] <- NA_real_
 
   rows <- tibble::tibble(
     activity_id = metadata$activity_id,

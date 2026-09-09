@@ -123,10 +123,36 @@ test_that("Garmin Splits parser computes canonical volume from reps and weight",
   )
 
   expect_equal(parsed$volume_lb, 315)
-  expect_equal(parsed$garmin_volume_lb, 999)
+  expect_equal(parsed$garmin_volume_lb, 315)
   expect_false(parsed$volume_matches_garmin)
 })
 
+test_that("Garmin Splits parser truncates fractional weights and normalizes volumes", {
+  splits_path <- file.path(tempdir(), "2026-08-27-garmin-splits-999111230.csv")
+  write_splits_csv(
+    splits_path,
+    list(
+      Set = c(1L, 2L, 3L),
+      "Exercise Name" = rep("Chest Press with Band", 3),
+      Time = rep("0:30", 3),
+      Rest = rep("1:00", 3),
+      Reps = c(15L, 10L, 10L),
+      Weight = c("210.5 lbs", "65 lbs", "N/A"),
+      Volume = c("3157.5 lbs", "650 lbs", "500 lbs")
+    )
+  )
+
+  parsed <- parse_garmin_splits_csv(
+    splits_path,
+    exercise_mapping = test_import_mapping(),
+    day = 1L
+  )
+
+  expect_equal(parsed$weight_lb, c(210, 65, NA_real_))
+  expect_equal(parsed$garmin_volume_lb, c(3150, 650, NA_real_))
+  expect_equal(parsed$volume_lb, c(3150, 650, NA_real_))
+  expect_equal(parsed$volume_matches_garmin, c(TRUE, TRUE, NA))
+})
 
 test_that("Garmin Splits parser preserves declared numeric NA sentinels", {
   splits_path <- file.path(tempdir(), "2026-08-27-garmin-splits-999111229.csv")
