@@ -114,6 +114,7 @@ validate_lifting_data <- function(sets, tolerance = 1e-8, exercise_mapping = NUL
     dplyr::filter(.data$n > 1)
   bad_reps <- !is.na(sets$reps) & sets$reps < 0
   bad_weights <- !is.na(sets$weight_lb) & sets$weight_lb < 0
+  fractional_weights <- !is.na(sets$weight_lb) & sets$weight_lb != trunc(sets$weight_lb)
 
   comparable_volume <- !is.na(sets$reps) & !is.na(sets$weight_lb) & !is.na(sets$volume_lb)
   volume_mismatch <- comparable_volume & abs(sets$volume_lb - (sets$reps * sets$weight_lb)) > tolerance
@@ -221,6 +222,12 @@ validate_lifting_data <- function(sets, tolerance = 1e-8, exercise_mapping = NUL
       if (any(bad_weights)) "fail" else "pass",
       if (any(bad_weights)) "Weights must be nonnegative when present." else "Weights are nonnegative where present.",
       sum(bad_weights)
+    ),
+    check_row(
+      "weights_whole_numbers",
+      if (any(fractional_weights)) "fail" else "pass",
+      if (any(fractional_weights)) "Weights must be whole numbers when present." else "Weights are whole numbers where present.",
+      sum(fractional_weights)
     ),
     check_row(
       "volume_matches_reps_times_weight",
