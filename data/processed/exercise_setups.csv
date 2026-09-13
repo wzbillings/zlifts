@@ -7,4 +7,4 @@ activity_id,date,exercise_raw,exercise_variant,review_status,notes
 24215717452,2026-09-02,Row,double-pulley,reviewed,User-supplied row machine setup; recorded weights are not comparable across pulley counts.
 24278701838,2026-09-08,Row,single-pulley,reviewed,Assigned from 70 lb row loading matching existing single-pulley row pattern.
 24295061347,2026-09-09,Row,single-pulley,inferred,Assigned from 75 lb row loading matching existing single-pulley row pattern.
-24327382124,2026-09-13,Row,single-pulley,inferred,Assigned from 75 lb row loading matching existing single-pulley row pattern.
+24327382124,2026-09-11,Row,single-pulley,inferred,Assigned from 75 lb row loading matching existing single-pulley row pattern.

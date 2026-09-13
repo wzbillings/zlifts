@@ -208,31 +208,31 @@ activity_id,day,date,date_source,workout_name,set_number,exercise_raw,exercise,e
 24295061347,8,2026-09-09,raw filename,Garmin Strength 2026-09-09 (24295061347),22,Weighted Seated Calf Raise,Calf Extension,,Calf Extension,machine,,0:30.0,30,1:54.1,114.1,15,210,3150,3150,TRUE
 24295061347,8,2026-09-09,raw filename,Garmin Strength 2026-09-09 (24295061347),23,Weighted Seated Calf Raise,Calf Extension,,Calf Extension,machine,,0:30.4,30.4,1:29.8,89.8,15,210,3150,3150,TRUE
 24295061347,8,2026-09-09,raw filename,Garmin Strength 2026-09-09 (24295061347),24,Weighted Seated Calf Raise,Calf Extension,,Calf Extension,machine,,0:42.0,42,0:08.4,8.4,15,210,3150,3150,TRUE
-24327382124,9,2026-09-13,raw filename,Garmin Strength 2026-09-13 (24327382124),1,Leg Press,Seated Leg Press,,Seated Leg Press,machine,,0:51.9,51.9,0:50.3,50.3,10,125,1250,1250,TRUE
-24327382124,9,2026-09-13,raw filename,Garmin Strength 2026-09-13 (24327382124),2,Leg Press,Seated Leg Press,,Seated Leg Press,machine,,0:52.1,52.1,2:26.4,146.4,15,210,3150,3150,TRUE
-24327382124,9,2026-09-13,raw filename,Garmin Strength 2026-09-13 (24327382124),3,Leg Press,Seated Leg Press,,Seated Leg Press,machine,,0:58.3,58.3,2:28.9,148.9,15,210,3150,3150,TRUE
-24327382124,9,2026-09-13,raw filename,Garmin Strength 2026-09-13 (24327382124),4,Leg Press,Seated Leg Press,,Seated Leg Press,machine,,1:04.0,64,1:25.3,85.3,15,210,3150,3150,TRUE
-24327382124,9,2026-09-13,raw filename,Garmin Strength 2026-09-13 (24327382124),5,Suspension Chest Press,Chest Press,,Chest Press,machine,,1:07.6,67.6,1:59.1,119.1,15,65,975,975,TRUE
-24327382124,9,2026-09-13,raw filename,Garmin Strength 2026-09-13 (24327382124),6,Suspension Chest Press,Chest Press,,Chest Press,machine,,0:57.4,57.4,2:33.4,153.4,15,65,975,975,TRUE
-24327382124,9,2026-09-13,raw filename,Garmin Strength 2026-09-13 (24327382124),7,Suspension Chest Press,Chest Press,,Chest Press,machine,,0:47.1,47.1,1:34.4,94.4,13,65,845,845,TRUE
-24327382124,9,2026-09-13,raw filename,Garmin Strength 2026-09-13 (24327382124),8,Row,Row,single-pulley,Row,machine,,0:52.5,52.5,1:38.6,98.6,15,75,1125,1125,TRUE
-24327382124,9,2026-09-13,raw filename,Garmin Strength 2026-09-13 (24327382124),9,Row,Row,single-pulley,Row,machine,,0:51.0,51,1:35.7,95.7,15,75,1125,1125,TRUE
-24327382124,9,2026-09-13,raw filename,Garmin Strength 2026-09-13 (24327382124),10,Row,Row,single-pulley,Row,machine,,0:49.9,49.9,1:44.9,104.9,15,75,1125,1125,TRUE
-24327382124,9,2026-09-13,raw filename,Garmin Strength 2026-09-13 (24327382124),11,Weighted Leg Curl,Leg Curl,,Leg Curl,machine,,0:45.0,45,2:01.6,121.6,15,120,1800,1800,TRUE
-24327382124,9,2026-09-13,raw filename,Garmin Strength 2026-09-13 (24327382124),12,Weighted Leg Curl,Leg Curl,,Leg Curl,machine,,0:36.3,36.3,1:57.0,117,15,120,1800,1800,TRUE
-24327382124,9,2026-09-13,raw filename,Garmin Strength 2026-09-13 (24327382124),13,Weighted Leg Curl,Leg Curl,,Leg Curl,machine,,0:38.0,38,1:36.9,96.9,13,120,1560,1560,TRUE
-24327382124,9,2026-09-13,raw filename,Garmin Strength 2026-09-13 (24327382124),14,Shoulder Press,Shoulder Press,,Shoulder Press,machine,,0:49.3,49.3,2:16.9,136.9,15,30,450,450,TRUE
-24327382124,9,2026-09-13,raw filename,Garmin Strength 2026-09-13 (24327382124),15,Shoulder Press,Shoulder Press,,Shoulder Press,machine,,0:52.6,52.6,2:01.6,121.6,15,30,450,450,TRUE
-24327382124,9,2026-09-13,raw filename,Garmin Strength 2026-09-13 (24327382124),16,Shoulder Press,Shoulder Press,,Shoulder Press,machine,,0:48.7,48.7,1:54.2,114.2,14,30,420,420,TRUE
-24327382124,9,2026-09-13,raw filename,Garmin Strength 2026-09-13 (24327382124),17,Weighted Static Back Extension,Back Extension,,Back Extension,machine,,0:57.9,57.9,1:58.0,118,15,150,2250,2250,TRUE
-24327382124,9,2026-09-13,raw filename,Garmin Strength 2026-09-13 (24327382124),18,Weighted Static Back Extension,Back Extension,,Back Extension,machine,,0:55.0,55,1:34.5,94.5,15,150,2250,2250,TRUE
-24327382124,9,2026-09-13,raw filename,Garmin Strength 2026-09-13 (24327382124),19,Weighted Seated Calf Raise,Calf Extension,,Calf Extension,machine,,0:52.5,52.5,2:04.5,124.5,15,210,3150,3150,TRUE
-24327382124,9,2026-09-13,raw filename,Garmin Strength 2026-09-13 (24327382124),20,Weighted Seated Calf Raise,Calf Extension,,Calf Extension,machine,,0:35.0,35,2:30.1,150.1,15,210,3150,3150,TRUE
-24327382124,9,2026-09-13,raw filename,Garmin Strength 2026-09-13 (24327382124),21,Weighted Seated Calf Raise,Calf Extension,,Calf Extension,machine,,0:53.3,53.3,1:59.5,119.5,15,210,3150,3150,TRUE
-24327382124,9,2026-09-13,raw filename,Garmin Strength 2026-09-13 (24327382124),22,Weighted Sliding Hip Adduction,Hip Adduction,,Hip Adduction,machine,,1:08.6,68.6,2:08.3,128.3,20,115,2300,2300,TRUE
-24327382124,9,2026-09-13,raw filename,Garmin Strength 2026-09-13 (24327382124),23,Weighted Sliding Hip Adduction,Hip Adduction,,Hip Adduction,machine,,0:28.9,28.9,1:33.4,93.4,15,200,3000,3000,TRUE
-24327382124,9,2026-09-13,raw filename,Garmin Strength 2026-09-13 (24327382124),24,Weighted Sliding Hip Adduction,Hip Adduction,,Hip Adduction,machine,,0:47.3,47.3,2:05.2,125.2,15,200,3000,3000,TRUE
-24327382124,9,2026-09-13,raw filename,Garmin Strength 2026-09-13 (24327382124),25,Weighted Crunch,Ab Crunch,,Ab Crunch,machine,,0:52.6,52.6,2:01.7,121.7,15,20,300,300,TRUE
-24327382124,9,2026-09-13,raw filename,Garmin Strength 2026-09-13 (24327382124),26,Weighted Crunch,Ab Crunch,,Ab Crunch,machine,,0:51.3,51.3,2:11.9,131.9,15,20,300,300,TRUE
-24327382124,9,2026-09-13,raw filename,Garmin Strength 2026-09-13 (24327382124),27,Weighted Standing Hip Abduction,Hip Abduction,,Hip Abduction,machine,,0:46.1,46.1,1:36.6,96.6,20,210,4200,4200,TRUE
-24327382124,9,2026-09-13,raw filename,Garmin Strength 2026-09-13 (24327382124),28,Weighted Standing Hip Abduction,Hip Abduction,,Hip Abduction,machine,,0:47.7,47.7,0:52.1,52.1,20,210,4200,4200,TRUE
+24327382124,9,2026-09-11,raw filename,Garmin Strength 2026-09-11 (24327382124),1,Leg Press,Seated Leg Press,,Seated Leg Press,machine,,0:51.9,51.9,0:50.3,50.3,10,125,1250,1250,TRUE
+24327382124,9,2026-09-11,raw filename,Garmin Strength 2026-09-11 (24327382124),2,Leg Press,Seated Leg Press,,Seated Leg Press,machine,,0:52.1,52.1,2:26.4,146.4,15,210,3150,3150,TRUE
+24327382124,9,2026-09-11,raw filename,Garmin Strength 2026-09-11 (24327382124),3,Leg Press,Seated Leg Press,,Seated Leg Press,machine,,0:58.3,58.3,2:28.9,148.9,15,210,3150,3150,TRUE
+24327382124,9,2026-09-11,raw filename,Garmin Strength 2026-09-11 (24327382124),4,Leg Press,Seated Leg Press,,Seated Leg Press,machine,,1:04.0,64,1:25.3,85.3,15,210,3150,3150,TRUE
+24327382124,9,2026-09-11,raw filename,Garmin Strength 2026-09-11 (24327382124),5,Suspension Chest Press,Chest Press,,Chest Press,machine,,1:07.6,67.6,1:59.1,119.1,15,65,975,975,TRUE
+24327382124,9,2026-09-11,raw filename,Garmin Strength 2026-09-11 (24327382124),6,Suspension Chest Press,Chest Press,,Chest Press,machine,,0:57.4,57.4,2:33.4,153.4,15,65,975,975,TRUE
+24327382124,9,2026-09-11,raw filename,Garmin Strength 2026-09-11 (24327382124),7,Suspension Chest Press,Chest Press,,Chest Press,machine,,0:47.1,47.1,1:34.4,94.4,13,65,845,845,TRUE
+24327382124,9,2026-09-11,raw filename,Garmin Strength 2026-09-11 (24327382124),8,Row,Row,single-pulley,Row,machine,,0:52.5,52.5,1:38.6,98.6,15,75,1125,1125,TRUE
+24327382124,9,2026-09-11,raw filename,Garmin Strength 2026-09-11 (24327382124),9,Row,Row,single-pulley,Row,machine,,0:51.0,51,1:35.7,95.7,15,75,1125,1125,TRUE
+24327382124,9,2026-09-11,raw filename,Garmin Strength 2026-09-11 (24327382124),10,Row,Row,single-pulley,Row,machine,,0:49.9,49.9,1:44.9,104.9,15,75,1125,1125,TRUE
+24327382124,9,2026-09-11,raw filename,Garmin Strength 2026-09-11 (24327382124),11,Weighted Leg Curl,Leg Curl,,Leg Curl,machine,,0:45.0,45,2:01.6,121.6,15,120,1800,1800,TRUE
+24327382124,9,2026-09-11,raw filename,Garmin Strength 2026-09-11 (24327382124),12,Weighted Leg Curl,Leg Curl,,Leg Curl,machine,,0:36.3,36.3,1:57.0,117,15,120,1800,1800,TRUE
+24327382124,9,2026-09-11,raw filename,Garmin Strength 2026-09-11 (24327382124),13,Weighted Leg Curl,Leg Curl,,Leg Curl,machine,,0:38.0,38,1:36.9,96.9,13,120,1560,1560,TRUE
+24327382124,9,2026-09-11,raw filename,Garmin Strength 2026-09-11 (24327382124),14,Shoulder Press,Shoulder Press,,Shoulder Press,machine,,0:49.3,49.3,2:16.9,136.9,15,30,450,450,TRUE
+24327382124,9,2026-09-11,raw filename,Garmin Strength 2026-09-11 (24327382124),15,Shoulder Press,Shoulder Press,,Shoulder Press,machine,,0:52.6,52.6,2:01.6,121.6,15,30,450,450,TRUE
+24327382124,9,2026-09-11,raw filename,Garmin Strength 2026-09-11 (24327382124),16,Shoulder Press,Shoulder Press,,Shoulder Press,machine,,0:48.7,48.7,1:54.2,114.2,14,30,420,420,TRUE
+24327382124,9,2026-09-11,raw filename,Garmin Strength 2026-09-11 (24327382124),17,Weighted Static Back Extension,Back Extension,,Back Extension,machine,,0:57.9,57.9,1:58.0,118,15,150,2250,2250,TRUE
+24327382124,9,2026-09-11,raw filename,Garmin Strength 2026-09-11 (24327382124),18,Weighted Static Back Extension,Back Extension,,Back Extension,machine,,0:55.0,55,1:34.5,94.5,15,150,2250,2250,TRUE
+24327382124,9,2026-09-11,raw filename,Garmin Strength 2026-09-11 (24327382124),19,Weighted Seated Calf Raise,Calf Extension,,Calf Extension,machine,,0:52.5,52.5,2:04.5,124.5,15,210,3150,3150,TRUE
+24327382124,9,2026-09-11,raw filename,Garmin Strength 2026-09-11 (24327382124),20,Weighted Seated Calf Raise,Calf Extension,,Calf Extension,machine,,0:35.0,35,2:30.1,150.1,15,210,3150,3150,TRUE
+24327382124,9,2026-09-11,raw filename,Garmin Strength 2026-09-11 (24327382124),21,Weighted Seated Calf Raise,Calf Extension,,Calf Extension,machine,,0:53.3,53.3,1:59.5,119.5,15,210,3150,3150,TRUE
+24327382124,9,2026-09-11,raw filename,Garmin Strength 2026-09-11 (24327382124),22,Weighted Sliding Hip Adduction,Hip Adduction,,Hip Adduction,machine,,1:08.6,68.6,2:08.3,128.3,20,115,2300,2300,TRUE
+24327382124,9,2026-09-11,raw filename,Garmin Strength 2026-09-11 (24327382124),23,Weighted Sliding Hip Adduction,Hip Adduction,,Hip Adduction,machine,,0:28.9,28.9,1:33.4,93.4,15,200,3000,3000,TRUE
+24327382124,9,2026-09-11,raw filename,Garmin Strength 2026-09-11 (24327382124),24,Weighted Sliding Hip Adduction,Hip Adduction,,Hip Adduction,machine,,0:47.3,47.3,2:05.2,125.2,15,200,3000,3000,TRUE
+24327382124,9,2026-09-11,raw filename,Garmin Strength 2026-09-11 (24327382124),25,Weighted Crunch,Ab Crunch,,Ab Crunch,machine,,0:52.6,52.6,2:01.7,121.7,15,20,300,300,TRUE
+24327382124,9,2026-09-11,raw filename,Garmin Strength 2026-09-11 (24327382124),26,Weighted Crunch,Ab Crunch,,Ab Crunch,machine,,0:51.3,51.3,2:11.9,131.9,15,20,300,300,TRUE
+24327382124,9,2026-09-11,raw filename,Garmin Strength 2026-09-11 (24327382124),27,Weighted Standing Hip Abduction,Hip Abduction,,Hip Abduction,machine,,0:46.1,46.1,1:36.6,96.6,20,210,4200,4200,TRUE
+24327382124,9,2026-09-11,raw filename,Garmin Strength 2026-09-11 (24327382124),28,Weighted Standing Hip Abduction,Hip Abduction,,Hip Abduction,machine,,0:47.7,47.7,0:52.1,52.1,20,210,4200,4200,TRUE
